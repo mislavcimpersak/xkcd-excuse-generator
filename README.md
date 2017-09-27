@@ -15,12 +15,12 @@ Send `first_text` and `second_text` with desired text as GET parameters to funct
 ### Using curl:
 
 ```
-curl -X GET https://zhrx77k67l.execute-api.eu-central-1.amazonaws.com/show/\?first_text\=my%20function%20is%20uploading\&second_text\=uploading > excuse.png
+curl -X GET https://xzmc1m2dgb.execute-api.eu-central-1.amazonaws.com/prod/\?first_text\=my%20function%20is%20uploading\&second_text\=uploading > excuse.png
 ```
 
 ### Using browser
 
-Visit [function](https://a8kthzxsv2.execute-api.eu-central-1.amazonaws.com/show/) in browser and follow instructions.
+Visit [function](https://xzmc1m2dgb.execute-api.eu-central-1.amazonaws.com/prod/) in browser and follow instructions.
 
 ## Original image
 
