@@ -1,0 +1,12 @@
+{
+    "prod": {
+        "app_function": "app.app",
+        "aws_region": "eu-central-1",
+        "profile_name": "mislavcimpersak",
+        "s3_bucket": "excuse-generator"
+    },
+    "dev": {
+        "extends": "prod",
+        "debug": true
+    }
+}
