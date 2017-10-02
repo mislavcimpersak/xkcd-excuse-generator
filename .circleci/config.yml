@@ -42,12 +42,18 @@ jobs:
             pip install -r requirements_testing.txt
             pytest
 
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports
+      - run:
+          name: try to package
+          command: |
+            . venv/bin/activate
+            if [ "${CIRCLE_BRANCH}" != "master" ]; then
+              zappa package dev
+            else
+              zappa package prod
+            fi
 
       - deploy:
-          name: deploy dev
+          name: deploy
           command: |
             . venv/bin/activate
             mkdir -p ~/.aws
@@ -61,5 +67,13 @@ jobs:
                 zappa update dev;
               else
                 zappa deploy dev;
+              fi
+            else
+              if
+                zappa status prod;
+              then
+                zappa update prod;
+              else
+                zappa deploy prod;
               fi
             fi
