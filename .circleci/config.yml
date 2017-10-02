@@ -47,8 +47,9 @@ jobs:
           destination: test-reports
 
       - deploy:
-          name: Deploy Dev
+          name: deploy dev
           command: |
+            . venv/bin/activate
             if [ "${CIRCLE_BRANCH}" != "master" ]; then
               zappa update dev
             fi
