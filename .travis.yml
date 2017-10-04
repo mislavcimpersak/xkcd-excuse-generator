@@ -4,6 +4,7 @@ python:
 install:
   - pip install -r requirements_testing.txt
 script:
+  # `set -e` will make script to stop if tests fail or anything else
   - set -e
   - pytest
   - mkdir -p ~/.aws
