@@ -16,5 +16,4 @@ deploy:
     - if [ "$TRAVIS_BRANCH" = "master" ]; then export ZAPPA_STAGE=prod; fi
     - zappa update $ZAPPA_STAGE
   on:
-    tags: true
     all_branches: true
