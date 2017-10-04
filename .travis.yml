@@ -5,3 +5,8 @@ install:
   - pip install -r requirements_testing.txt
 script:
   - pytest
+deploy:
+  provider: script
+  script:
+    - if [ "$TRAVIS_BRANCH" != "master" ]; then zappa update dev; fi
+    - if [ "$TRAVIS_BRANCH" = "master" ]; then zappa update prod; fi
