@@ -35,7 +35,7 @@ def root():
         # TODO
         example_url = '{}?first_text=my%20function%20is%20uploading%20to%20aws&second_text=uploading'.format(request.url)
         return (
-            'Usage: just add GET parameters `first_text` and `second_text` with desired text to the current URL ;)'
+            'Usage: just add GET parameters `first_text` and and `second_text` with desired text to the current URL ;)'
             '<br/><br/><br/> ie. &nbsp;'
             '<a href="{0}">{0}</a>'.format(example_url)
         )
