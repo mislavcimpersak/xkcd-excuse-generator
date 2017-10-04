@@ -4,6 +4,7 @@ python:
 install:
   - pip install -r requirements_testing.txt
 script:
+  - set -e
   - pytest
   - mkdir -p ~/.aws
   - echo "[mislavcimpersak]" >> ~/.aws/credentials
