@@ -7,7 +7,7 @@ script:
   # `set -e` will make script to stop if tests fail or anything else
   - set -e
   - pytest
-  - pip uninstall -r requirements_testing.txt
+  - pip uninstall -r requirements_testing.txt -y
   - pip install -r requirements.txt
   - mkdir -p ~/.aws
   - echo "[mislavcimpersak]" >> ~/.aws/credentials
