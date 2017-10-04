@@ -5,15 +5,10 @@ install:
   - pip install -r requirements_testing.txt
 script:
   - pytest
-deploy:
-  provider: script
-  script:
-    - mkdir -p ~/.aws
-    - echo "[mislavcimpersak]" >> ~/.aws/credentials
-    - echo "aws_access_key_id = "$AWS_ACCESS_KEY_ID >> ~/.aws/credentials
-    - echo "aws_secret_access_key = "$AWS_SECRET_ACCESS_KEY >> ~/.aws/credentials
-    - if [ "$TRAVIS_BRANCH" != "master" ]; then export ZAPPA_STAGE=dev; fi
-    - if [ "$TRAVIS_BRANCH" = "master" ]; then export ZAPPA_STAGE=prod; fi
-    - zappa update $ZAPPA_STAGE
-  on:
-    all_branches: true
+  - mkdir -p ~/.aws
+  - echo "[mislavcimpersak]" >> ~/.aws/credentials
+  - echo "aws_access_key_id = "$AWS_ACCESS_KEY_ID >> ~/.aws/credentials
+  - echo "aws_secret_access_key = "$AWS_SECRET_ACCESS_KEY >> ~/.aws/credentials
+  - if [ "$TRAVIS_BRANCH" != "master" ]; then export ZAPPA_STAGE=dev; fi
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then export ZAPPA_STAGE=prod; fi
+  - zappa update $ZAPPA_STAGE
