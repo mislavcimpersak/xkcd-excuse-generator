@@ -7,12 +7,24 @@ script:
   # `set -e` will make script to stop if tests fail or anything else
   - set -e
   - pytest
-  - pip uninstall -r requirements_testing.txt -y
+
+  # set ZAPPA_STAGE env var depending on current branch
+  - if [ "$TRAVIS_BRANCH" != "master" ]; then export ZAPPA_STAGE=dev; fi
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then export ZAPPA_STAGE=prod; fi
+
+  # clearing current virtualenv from testing requirements and reinstall
+  # base requirements to keep zappa package as small as possible
+  - virtualenv --clear $VIRTUAL_ENV
   - pip install -r requirements.txt
+
+  # test if .zip file can be created
+  - zappa package $ZAPPA_STAGE
+
+  # set aws credentials from env vars set in web interface
   - mkdir -p ~/.aws
   - echo "[mislavcimpersak]" >> ~/.aws/credentials
   - echo "aws_access_key_id = "$AWS_ACCESS_KEY_ID >> ~/.aws/credentials
   - echo "aws_secret_access_key = "$AWS_SECRET_ACCESS_KEY >> ~/.aws/credentials
-  - if [ "$TRAVIS_BRANCH" != "master" ]; then export ZAPPA_STAGE=dev; fi
-  - if [ "$TRAVIS_BRANCH" = "master" ]; then export ZAPPA_STAGE=prod; fi
+
+  # try to update, if the command fails do the initial deploy
   - zappa update $ZAPPA_STAGE || zappa deploy $ZAPPA_STAGE;
