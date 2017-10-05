@@ -14,7 +14,7 @@ script:
 
   # clearing current virtualenv from testing requirements and reinstall
   # base requirements to keep zappa package as small as possible
-  - virtualenv --clear $VIRTUAL_ENV
+  # - virtualenv --clear $VIRTUAL_ENV
   - pip install -r requirements.txt
 
   # test if .zip file can be created
