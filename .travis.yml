@@ -15,10 +15,4 @@ script:
   - echo "aws_secret_access_key = "$AWS_SECRET_ACCESS_KEY >> ~/.aws/credentials
   - if [ "$TRAVIS_BRANCH" != "master" ]; then export ZAPPA_STAGE=dev; fi
   - if [ "$TRAVIS_BRANCH" = "master" ]; then export ZAPPA_STAGE=prod; fi
-  - if
-      zappa status $ZAPPA_STAGE;
-    then
-      zappa update $ZAPPA_STAGE;
-    else
-      zappa deploy $ZAPPA_STAGE;
-    fi
+  - zappa update $ZAPPA_STAGE || zappa deploy $ZAPPA_STAGE;
