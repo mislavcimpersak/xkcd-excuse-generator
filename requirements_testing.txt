@@ -1,5 +1,6 @@
 -r requirements.txt
 
 pytest
+coverage
 pytest-cov
 pytest-sugar

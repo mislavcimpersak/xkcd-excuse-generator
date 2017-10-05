@@ -5,6 +5,7 @@ install:
   - pip install -r requirements_testing.txt
 script:
   # `set -e` will make script to stop if tests fail or anything else
+  - pip freeze
   - set -e
   - pytest
 
@@ -12,9 +13,9 @@ script:
   - if [ "$TRAVIS_BRANCH" != "master" ]; then export ZAPPA_STAGE=dev; fi
   - if [ "$TRAVIS_BRANCH" = "master" ]; then export ZAPPA_STAGE=prod; fi
 
-  # clearing current virtualenv from testing requirements and reinstall
-  # base requirements to keep zappa package as small as possible
-  # - virtualenv --clear $VIRTUAL_ENV
+  # uninstall testing requirements and reinstall base requirements to keep
+  # zappa package as small as possible
+  - pip uninstall -r requirements_testing.txt -y
   - pip install -r requirements.txt
 
   # test if .zip file can be created
