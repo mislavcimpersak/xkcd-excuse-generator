@@ -21,3 +21,4 @@ MANIFEST
 *.egg-info
 
 secrets.json
+credentials.csv
