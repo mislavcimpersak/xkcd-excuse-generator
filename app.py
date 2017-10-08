@@ -2,50 +2,75 @@
 XKCD Excuse Generator API created using Hug Framework
 """
 
+from binascii import hexlify, unhexlify
 from io import BytesIO
 
 import hug
 from PIL import Image, ImageDraw, ImageFont
+from slugify import slugify
 
 
-# blank image view
+@hug.get(
+    versions=1,
+    examples='who=programmer&why=my code is compiling&what=compiling'
+)
+def excuse(request, response, who: hug.types.text='', why: hug.types.text='', what: hug.types.text=''):
+    """
+    API view that returns url to rendered image or errors if there were any.
+
+    GET https://function.xkcd-excuse.com/api/v1/?who=one&why=two&what=three
+    >>
+    {
+        "errors": {
+            "code": 1001,
+            "text": "first text two long"  // možda onda imati validaciju pokraj inputa
+        }
+        "data": {
+            "who": "one",
+            "why": "two",
+            "what": "three",
+            "image_url": "function.xkcd-excuse.com/media/<hash>-<hash>-<hash>.png"
+        }
+    }
+    """
+    who, why, what = _sanitize_input(who), _sanitize_input(why), _sanitize_input(what)
+
+    who_hex, why_hex, what_hex = _encode_hex(who, why, what)
+    image_url = '{scheme}://{domain}/media/{who}-{why}-{what}.png'.format(
+        scheme=request.scheme,
+        domain=request.netloc,
+        who=who_hex,
+        why=why_hex,
+        what=what_hex
+    )
+    return {
+        'data': {
+            'image_url': image_url,
+        }
+    }
 
 
-# api view
-# GET https://function.xkcd-excuse.com/api/v1/?who=one&why=two&what=three
-# >>
-# {
-#     "errors": {
-#         "code": 1001,
-#         "text": "first text two long"  // možda onda imati validaciju pokraj inputa
-#     }
-#     "data": {
-#         "who": "one",
-#         "why": "two",
-#         "what": "three",
-#         "image_url": "function.xkcd-excuse.com/media/<hash>.png"
-#     }
-# }
-
-
-# media image view that displays image directly (.png extension)
-# TODO - isprobati ako je minus u textu? dal se isto ok enkodira u hex?
 @hug.local()
 @hug.get(
-    '/media/{who}-{why}-{what}',
-    # versions=1,
+    '/media/{who_hex}-{why_hex}-{what_hex}.png',
     output=hug.output_format.png_image,
     examples='/'
 )
-def img(who: hug.types.text, why: hug.types.text, what: hug.types.text):
+def img(who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.text):
     """
-    Serve image to user
+    Serve image to user.
+    Media image view that displays image directly (.png extension)
     """
+    who, why, what = _decode_hex(who_hex, why_hex, what_hex)
+
     # TODO better text sanitizing
     who = 'The #1  {} excuse'.format(who).upper()
     legit = 'for legitimately slacking off:'.upper()
-    why = why.upper()
-    what = '{}!'.format(what).upper()
+    why = '"{}."'.format(why)
+    what = '{}!'.format(what)
+
+    # TODO image generation needs to be taken out to a separate method
+    # so that error reporting can work in API view
 
     # ovo je prazna slika, ak se `blank_image` pozove ko zadnji element u skripti, pokaže sliku
     image = Image.open("blank_excuse.png", "r").convert('RGBA')
@@ -80,7 +105,42 @@ def img(who: hug.types.text, why: hug.types.text, what: hug.types.text):
     return image
 
 
-# _decode_hex(*texts)
+def _sanitize_input(input):
+    """
+    Sanitizing input so that it can be hexlifyied.
+    Removes extra spacing, slugifies all non-ascii chars, makes everything
+    uppercase.
+
+    :param input: dirty user input from get param
+    :type input: str
+
+    :returns: cleaned user input
+    :rtype: str
+    """
+    return slugify(input.strip(' .'), separator=' ').upper()
 
 
-# _encode_hex(*texts)
+def _decode_hex(*texts):
+    """
+    Transforms all attrs to regular (human-readable) strings.
+
+    :param texts: list of strings to be decoded
+    :type texts: list
+
+    :returns: list of hex encoded strings
+    :rtype: list
+    """
+    return [unhexlify(text).decode() for text in texts]
+
+
+def _encode_hex(*texts):
+    """
+    Transforms all attrs to hex encoded strings.
+
+    :param texts: list of string to be encoded
+    :type texts: list
+
+    :returns: list of hex values
+    :rtype: list
+    """
+    return [hexlify(bytes(text, 'utf-8')).decode() for text in texts]
