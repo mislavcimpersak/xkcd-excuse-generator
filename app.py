@@ -1,79 +1,86 @@
+"""
+XKCD Excuse Generator API created using Hug Framework
+"""
+
 from io import BytesIO
-import os
 
+import hug
 from PIL import Image, ImageDraw, ImageFont
-from flask import Flask, send_file
-from flask import request
-
-app = Flask(__name__)
-
-dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
-@app.route('/blank', methods=['GET'])
-def blank():
+# blank image view
+
+
+# api view
+# GET https://function.xkcd-excuse.com/api/v1/?who=one&why=two&what=three
+# >>
+# {
+#     "errors": {
+#         "code": 1001,
+#         "text": "first text two long"  // možda onda imati validaciju pokraj inputa
+#     }
+#     "data": {
+#         "who": "one",
+#         "why": "two",
+#         "what": "three",
+#         "image_url": "function.xkcd-excuse.com/media/<hash>.png"
+#     }
+# }
+
+
+# media image view that displays image directly (.png extension)
+# TODO - isprobati ako je minus u textu? dal se isto ok enkodira u hex?
+@hug.local()
+@hug.get(
+    '/media/{who}-{why}-{what}',
+    # versions=1,
+    output=hug.output_format.png_image,
+    examples='/'
+)
+def img(who: hug.types.text, why: hug.types.text, what: hug.types.text):
     """
-    Serves blank image.
+    Serve image to user
     """
-    with open(os.path.join(dir_path, 'blank_excuse.png'), 'rb') as buffer:
-        return send_file(BytesIO(buffer.read()), mimetype='image/png')
+    # TODO better text sanitizing
+    who = 'The #1  {} excuse'.format(who).upper()
+    legit = 'for legitimately slacking off:'.upper()
+    why = why.upper()
+    what = '{}!'.format(what).upper()
 
-
-@app.route('/', methods=['GET'])
-def root():
-    """
-    If `first_text` and `second_text` are sent as GET parameters those text
-    will be written on a blank XKCD excuse image.
-
-    This needs a LOT of work. Created in a rush without any proper thought
-    given about code quality :'(
-    """
-    first_text = request.args.get('first_text')
-    second_text = request.args.get('second_text')
-
-    if not first_text or not second_text:
-        # TODO
-        example_url = '{}?first_text=my%20function%20is%20uploading%20to%20aws&second_text=uploading'.format(request.url)
-        return (
-            'Usage: just add GET parameters `first_text` and `second_text` with desired text to the current URL ;)'
-            '<br/><br/><br/> ie. &nbsp;'
-            '<a href="{0}">{0}</a>'.format(example_url)
-        )
-
-    first_text = '"{}"'.format(first_text.upper())
-    second_text = '{}!'.format(second_text.strip('!').upper())
-
-    # in the beginning this is an empty image
-    image = Image.open(os.path.join(dir_path, 'blank_excuse.png'), 'r')\
-        .convert('RGBA')
+    # ovo je prazna slika, ak se `blank_image` pozove ko zadnji element u skripti, pokaže sliku
+    image = Image.open("blank_excuse.png", "r").convert('RGBA')
 
     size = width, height = image.size
     draw = ImageDraw.Draw(image, 'RGBA')
-    first_font = ImageFont.truetype(os.path.join(dir_path, 'xkcd-script.ttf'), 22)
-    second_font = ImageFont.truetype(os.path.join(dir_path, 'xkcd-script.ttf'), 20)
 
-    if first_font.getsize(first_text)[0] > width:
-        return 'First text too long'
+    who_font = ImageFont.truetype("xkcd-script.ttf", 24)
+    legit_font = ImageFont.truetype("xkcd-script.ttf", 24)
+    why_font = ImageFont.truetype("xkcd-script.ttf", 22)
+    what_font = ImageFont.truetype("xkcd-script.ttf", 20)
 
-    if second_font.getsize(second_text)[0] > 100:
-        return 'Second text too long'
+    # Y text coordinates are constant
+    WHO_TEXT_Y = 12
+    LEGIT_TEXT_Y = 38
+    WHY_TEXT_Y = 85
+    WHAT_TEXT_Y = 220
 
-    # Y coordinates are constant
-    FIRST_TEXT_Y = 85
-    SECOND_TEXT_Y = 220
+    # X text coordinates are calculated
+    who_text_x = width - (width/2 + who_font.getsize(who)[0]/2)
+    legit_text_x = width - (width/2 + legit_font.getsize(legit)[0]/2)
+    why_text_x = width - (width/2 + why_font.getsize(why)[0]/2)
+    what_text_x = width - (width/2 + what_font.getsize(what)[0]/2) - 25
 
-    first_text_x = width - (width / 2 + first_font.getsize(first_text)[0] / 2)
-    second_text_x = width - (width / 2 + second_font.getsize(second_text)[0] / 2) - 25
-
-    draw.text((first_text_x, FIRST_TEXT_Y), first_text, fill=(0, 0 ,0 ,200), font=first_font)
-    draw.text((second_text_x, SECOND_TEXT_Y), second_text, fill=(0, 0, 0, 200), font=second_font)
+    draw.text((who_text_x, WHO_TEXT_Y), who, fill=(0, 0 ,0 ,200), font=who_font)
+    draw.text((legit_text_x, LEGIT_TEXT_Y), legit, fill=(0, 0 ,0 ,200), font=legit_font)
+    draw.text((why_text_x, WHY_TEXT_Y), why, fill=(0, 0 ,0 ,200), font=why_font)
+    draw.text((what_text_x, WHAT_TEXT_Y), what, fill=(0, 0, 0, 200), font=what_font)
 
     buffer = BytesIO()
-    image.save(buffer, format="PNG", quality=85, optimize=True)
-    buffer.seek(0)
-
-    return send_file(buffer, mimetype='image/png')
+    image.save(buffer, format="png")
+    return image
 
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+# _decode_hex(*texts)
+
+
+# _encode_hex(*texts)
