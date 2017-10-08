@@ -2,9 +2,10 @@
 XKCD Excuse Generator API created using Hug Framework
 """
 
-from binascii import hexlify, unhexlify
+from binascii import hexlify, unhexlify, Error as BinAsciiError
 from io import BytesIO
 
+from falcon import HTTP_404
 import hug
 from PIL import Image, ImageDraw, ImageFont
 from slugify import slugify
@@ -12,9 +13,9 @@ from slugify import slugify
 
 @hug.get(
     versions=1,
-    examples='who=programmer&why=my code is compiling&what=compiling'
+    examples='who=programmer&why=my%code%20is%20compiling&what=compiling'
 )
-def excuse(request, response, who: hug.types.text='', why: hug.types.text='', what: hug.types.text=''):
+def excuse(request, who: hug.types.text='', why: hug.types.text='', what: hug.types.text=''):
     """
     API view that returns url to rendered image or errors if there were any.
 
@@ -32,8 +33,22 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
             "image_url": "function.xkcd-excuse.com/media/<hash>-<hash>-<hash>.png"
         }
     }
+
+    :param request: request object
+    :type request: falcon.request.Request
+    :param who: who's excuse
+    :type who: str
+    :param why: what is the excuse
+    :type why: str
+    :param what: what are they saying
+    :type what: str
+
+    :returns: data dict with url to image or with errors
+    :rtype: dict
     """
     who, why, what = _sanitize_input(who), _sanitize_input(why), _sanitize_input(what)
+
+    image = get_excuse_image(who, why, what)
 
     who_hex, why_hex, what_hex = _encode_hex(who, why, what)
     image_url = '{scheme}://{domain}/media/{who}-{why}-{what}.png'.format(
@@ -56,13 +71,21 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
     output=hug.output_format.png_image,
     examples='/'
 )
-def img(who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.text):
+def img(response, who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.text):
     """
-    Serve image to user.
-    Media image view that displays image directly (.png extension)
+    Media image view that displays image directly from app.
     """
     who, why, what = _decode_hex(who_hex, why_hex, what_hex)
 
+    image = get_excuse_image(who, why, what)
+
+    if image:
+        return image
+    else:
+        raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
+
+
+def get_excuse_image(who, why, what):
     # TODO better text sanitizing
     who = 'The #1  {} excuse'.format(who).upper()
     legit = 'for legitimately slacking off:'.upper()
@@ -130,7 +153,10 @@ def _decode_hex(*texts):
     :returns: list of hex encoded strings
     :rtype: list
     """
-    return [unhexlify(text).decode() for text in texts]
+    try:
+        return [unhexlify(text).decode() for text in texts]
+    except BinAsciiError:
+        raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
 
 
 def _encode_hex(*texts):
