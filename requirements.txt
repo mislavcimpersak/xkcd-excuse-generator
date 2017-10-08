@@ -1,3 +1,4 @@
 Hug
 Pillow
+python-slugify
 zappa
