@@ -55,19 +55,9 @@ jobs:
             echo "aws_access_key_id = "$AWS_ACCESS_KEY_ID >> ~/.aws/credentials
             echo "aws_secret_access_key = "$AWS_SECRET_ACCESS_KEY >> ~/.aws/credentials
             if [ "${CIRCLE_BRANCH}" != "master" ]; then
-              if
-                zappa status dev;
-              then
-                zappa update dev;
-              else
-                zappa deploy dev;
-              fi
+              export ZAPPA_STAGE=prod;
             else
-              if
-                zappa status prod;
-              then
-                zappa update prod;
-              else
-                zappa deploy prod;
-              fi
+              export ZAPPA_STAGE=dev;
             fi
+            # try to update, if the command fails do the initial deploy
+            zappa update $ZAPPA_STAGE || zappa deploy $ZAPPA_STAGE;
