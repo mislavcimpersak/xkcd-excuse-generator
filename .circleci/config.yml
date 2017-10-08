@@ -1,0 +1,68 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6.1
+
+    working_directory: ~/xkcd-excuse-generator
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "requirements.txt" }}-{{ checksum "requirements_testing.txt" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv ~/venv
+            . ~/venv/bin/activate
+            pip install -r requirements.txt
+
+      - save_cache:
+          paths:
+            - ~/venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}-{{ checksum "requirements_testing.txt" }}
+
+      # run tests!
+      - run:
+          name: run tests
+          command: |
+            . ~/venv/bin/activate
+            pip install -r requirements_testing.txt
+            pytest
+
+      - run:
+          name: test zappa package creation
+          command: |
+            . ~/venv/bin/activate
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              zappa package prod
+            else
+              zappa package dev
+            fi
+
+      - deploy:
+          name: deploy
+          command: |
+            . ~/venv/bin/activate
+
+            # set aws credentials
+            mkdir -p ~/.aws
+            echo "[mislavcimpersak]" >> ~/.aws/credentials
+            echo "aws_access_key_id = "$AWS_ACCESS_KEY_ID >> ~/.aws/credentials
+            echo "aws_secret_access_key = "$AWS_SECRET_ACCESS_KEY >> ~/.aws/credentials
+
+            # set ZAPPA_STAGE env var depending on current branch
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              export ZAPPA_STAGE=prod;
+            else
+              export ZAPPA_STAGE=dev;
+            fi
+
+            # try to update, if the command fails do the initial deploy
+            zappa update $ZAPPA_STAGE || zappa deploy $ZAPPA_STAGE;
