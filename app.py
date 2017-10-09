@@ -75,7 +75,10 @@ def img(response, who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hu
     """
     Media image view that displays image directly from app.
     """
-    who, why, what = _decode_hex(who_hex, why_hex, what_hex)
+    try:
+        who, why, what = _decode_hex(who_hex, why_hex, what_hex)
+    except (BinAsciiError, UnicodeDecodeError):
+        raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
 
     image = get_excuse_image(who, why, what)
 

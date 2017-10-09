@@ -1,5 +1,16 @@
-from app import _sanitize_input
+from falcon import HTTP_404
+import hug
+
+import app
 from app import img, _get_text_font, _sanitize_input, _decode_hex, _encode_hex
+
+
+def test_img__bad_hex():
+    response = hug.test.get(app, '/media/30-30-3z.png')
+    assert response.status == HTTP_404
+
+    response = hug.test.get(app, '/media/aaaa-30-30.png')
+    assert response.status == HTTP_404
 
 
 
