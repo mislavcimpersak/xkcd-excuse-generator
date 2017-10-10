@@ -13,6 +13,13 @@ def test_img__bad_hex():
     assert response.status == HTTP_404
 
 
+def test_get_text_font():
+    font = _get_text_font(20)
+    assert font.size == 20
+
+    font = _get_text_font(20)
+    assert font.font.family == 'xkcd Script'
+
 
 def test_sanitize_input__simple():
     INPUT = 'programmer'
