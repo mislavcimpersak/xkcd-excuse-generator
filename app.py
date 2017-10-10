@@ -137,7 +137,6 @@ def get_excuse_image(who: str, why: str, what: str) -> Image:
     return image
 
 
-def _sanitize_input(input):
 def _get_text_font(size: int) -> ImageFont:
     """
     Loads font and sets font size for text on image
@@ -169,6 +168,7 @@ def _get_text_x_position(image_width: int, text: str, text_font: ImageFont, offs
     return image_width - (image_width / 2 + text_font.getsize(text)[0] / 2) - offset
 
 
+def _sanitize_input(input: str) -> str:
     """
     Sanitizing input so that it can be hexlifyied.
     Removes extra spacing, slugifies all non-ascii chars, makes everything
@@ -183,7 +183,7 @@ def _get_text_x_position(image_width: int, text: str, text_font: ImageFont, offs
     return slugify(input.strip(' .'), separator=' ').upper()
 
 
-def _decode_hex(*texts):
+def _decode_hex(*texts) -> list:
     """
     Transforms all attrs to regular (human-readable) strings.
 
@@ -193,13 +193,10 @@ def _decode_hex(*texts):
     :returns: list of hex encoded strings
     :rtype: list
     """
-    try:
-        return [unhexlify(text).decode() for text in texts]
-    except BinAsciiError:
-        raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
+    return [unhexlify(text).decode() for text in texts]
 
 
-def _encode_hex(*texts):
+def _encode_hex(*texts) -> list:
     """
     Transforms all attrs to hex encoded strings.
 
