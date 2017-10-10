@@ -129,7 +129,7 @@ def get_excuse_image(who: str, why: str, what: str) -> Image:
         legit, fill=(0, 0, 0, 200), font=legit_font)
     draw.text((_get_text_x_position(image_width, why, why_font), WHY_TEXT_Y),
         why, fill=(0, 0, 0, 200), font=why_font)
-    draw.text((_get_text_x_position(image_width, what, what_font), WHAT_TEXT_Y),
+    draw.text((_get_text_x_position(image_width, what, what_font, 25), WHAT_TEXT_Y),
         what, fill=(0, 0, 0, 200), font=what_font)
 
     buffer = BytesIO()
