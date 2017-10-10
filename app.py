@@ -92,7 +92,9 @@ def img(response, who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hu
         raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
 
 
-def get_excuse_image(who, why, what):
+def get_excuse_image(who: str, why: str, what: str) -> Image:
+    errors = []
+
     # TODO better text sanitizing
     who = 'The #1  {} excuse'.format(who).upper()
     legit = 'for legitimately slacking off:'.upper()
@@ -106,13 +108,14 @@ def get_excuse_image(who, why, what):
     image = Image.open(os.path.join(dir_path, 'blank_excuse.png'), 'r')\
         .convert('RGBA')
 
-    size = width, height = image.size
+    image_width, image_height = image.size
     draw = ImageDraw.Draw(image, 'RGBA')
 
-    who_font = ImageFont.truetype("xkcd-script.ttf", 24)
-    legit_font = ImageFont.truetype("xkcd-script.ttf", 24)
-    why_font = ImageFont.truetype("xkcd-script.ttf", 22)
-    what_font = ImageFont.truetype("xkcd-script.ttf", 20)
+    who_font = _get_text_font(24)
+    legit_font = _get_text_font(24)
+    why_font = _get_text_font(22)
+    what_font = _get_text_font(20)
+
 
     # Y text coordinates are constant
     WHO_TEXT_Y = 12
@@ -120,16 +123,14 @@ def get_excuse_image(who, why, what):
     WHY_TEXT_Y = 85
     WHAT_TEXT_Y = 220
 
-    # X text coordinates are calculated
-    who_text_x = width - (width/2 + who_font.getsize(who)[0]/2)
-    legit_text_x = width - (width/2 + legit_font.getsize(legit)[0]/2)
-    why_text_x = width - (width/2 + why_font.getsize(why)[0]/2)
-    what_text_x = width - (width/2 + what_font.getsize(what)[0]/2) - 25
-
-    draw.text((who_text_x, WHO_TEXT_Y), who, fill=(0, 0 ,0 ,200), font=who_font)
-    draw.text((legit_text_x, LEGIT_TEXT_Y), legit, fill=(0, 0 ,0 ,200), font=legit_font)
-    draw.text((why_text_x, WHY_TEXT_Y), why, fill=(0, 0 ,0 ,200), font=why_font)
-    draw.text((what_text_x, WHAT_TEXT_Y), what, fill=(0, 0, 0, 200), font=what_font)
+    draw.text((_get_text_x_position(image_width, who, who_font), WHO_TEXT_Y),
+        who, fill=(0, 0, 0, 200), font=who_font)
+    draw.text((_get_text_x_position(image_width, legit, legit_font), LEGIT_TEXT_Y),
+        legit, fill=(0, 0, 0, 200), font=legit_font)
+    draw.text((_get_text_x_position(image_width, why, why_font), WHY_TEXT_Y),
+        why, fill=(0, 0, 0, 200), font=why_font)
+    draw.text((_get_text_x_position(image_width, what, what_font), WHAT_TEXT_Y),
+        what, fill=(0, 0, 0, 200), font=what_font)
 
     buffer = BytesIO()
     image.save(buffer, format="png")
@@ -137,6 +138,37 @@ def get_excuse_image(who, why, what):
 
 
 def _sanitize_input(input):
+def _get_text_font(size: int) -> ImageFont:
+    """
+    Loads font and sets font size for text on image
+
+    :param size: font size
+    :type size: int
+
+    :returns: ImageFont object with desired font size set
+    :rtype: PIL.ImageFont
+    """
+    return ImageFont.truetype('xkcd-script.ttf', size)
+
+
+def _get_text_x_position(image_width: int, text: str, text_font: ImageFont, offset: int=None) -> float:
+    """
+    Calculate starting X coordinate for given text and text size.
+
+    :param text: user's text
+    :type text: str
+    :param text_font:
+    :type text_font: PIL.ImageFont
+    :param offset: how much to move from center of the image to the right
+    :type offset: int
+
+    :returns: text's X coordinate
+    :rtype: float
+    """
+    offset = 0 if offset is None else offset
+    return image_width - (image_width / 2 + text_font.getsize(text)[0] / 2) - offset
+
+
     """
     Sanitizing input so that it can be hexlifyied.
     Removes extra spacing, slugifies all non-ascii chars, makes everything
