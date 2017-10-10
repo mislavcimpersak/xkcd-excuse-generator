@@ -4,11 +4,15 @@ XKCD Excuse Generator API created using Hug Framework
 
 from binascii import hexlify, unhexlify, Error as BinAsciiError
 from io import BytesIO
+import os
 
 from falcon import HTTP_404
 import hug
 from PIL import Image, ImageDraw, ImageFont
 from slugify import slugify
+
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 @hug.get(
@@ -98,8 +102,9 @@ def get_excuse_image(who, why, what):
     # TODO image generation needs to be taken out to a separate method
     # so that error reporting can work in API view
 
-    # ovo je prazna slika, ak se `blank_image` pozove ko zadnji element u skripti, pokaže sliku
-    image = Image.open("blank_excuse.png", "r").convert('RGBA')
+    # in the beginning this is an empty image
+    image = Image.open(os.path.join(dir_path, 'blank_excuse.png'), 'r')\
+        .convert('RGBA')
 
     size = width, height = image.size
     draw = ImageDraw.Draw(image, 'RGBA')
