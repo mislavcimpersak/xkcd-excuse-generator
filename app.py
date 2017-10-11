@@ -54,19 +54,24 @@ def excuse(request, who: hug.types.text='', why: hug.types.text='', what: hug.ty
 
     image = get_excuse_image(who, why, what)
 
-    who_hex, why_hex, what_hex = _encode_hex(who, why, what)
-    image_url = '{scheme}://{domain}/media/{who}-{why}-{what}.png'.format(
-        scheme=request.scheme,
-        domain=request.netloc,
-        who=who_hex,
-        why=why_hex,
-        what=what_hex
-    )
-    return {
-        'data': {
-            'image_url': image_url,
+    if isinstance(image, Image.Image):
+        who_hex, why_hex, what_hex = _encode_hex(who, why, what)
+        image_url = '{scheme}://{domain}/media/{who}-{why}-{what}.png'.format(
+            scheme=request.scheme,
+            domain=request.netloc,
+            who=who_hex,
+            why=why_hex,
+            what=what_hex
+        )
+        return {
+            'data': {
+                'image_url': image_url,
+            }
         }
-    }
+    else:
+        return {
+            'errors': image
+        }
 
 
 @hug.local()
@@ -93,16 +98,10 @@ def img(response, who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hu
 
 
 def get_excuse_image(who: str, why: str, what: str) -> Image:
-    errors = []
-
-    # TODO better text sanitizing
     who = 'The #1  {} excuse'.format(who).upper()
     legit = 'for legitimately slacking off:'.upper()
     why = '"{}."'.format(why)
     what = '{}!'.format(what)
-
-    # TODO image generation needs to be taken out to a separate method
-    # so that error reporting can work in API view
 
     # in the beginning this is an empty image
     image = Image.open(os.path.join(dir_path, 'blank_excuse.png'), 'r')\
@@ -116,6 +115,31 @@ def get_excuse_image(who: str, why: str, what: str) -> Image:
     why_font = _get_text_font(22)
     what_font = _get_text_font(20)
 
+    # who_font, who, 150/image_width, code
+    def _check_user_input_size(image_width, who, why, what, who_font, why_font, what_font):
+        errors = []
+        if who_font.getsize(who)[0] > image_width:
+            errors.append({
+                'code': 1001,
+                'message': '"Who" text too long'
+            })
+        if why_font.getsize(why)[0] > image_width:
+            errors.append({
+                'code': 1002,
+                'message': '"Why" text too long'
+            })
+        if what_font.getsize(what)[0] > 100:
+            errors.append({
+                'code': 1003,
+                'message': '"What" text too long'
+            })
+        return errors
+
+    errors = _check_user_input_size(
+        image_width, who, why, what, who_font, why_font, what_font)
+
+    if errors:
+        return errors
 
     # Y text coordinates are constant
     WHO_TEXT_Y = 12
