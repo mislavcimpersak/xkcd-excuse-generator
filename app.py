@@ -86,7 +86,7 @@ def img(response, who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hu
 
     image = get_excuse_image(who, why, what)
 
-    if image:
+    if isinstance(image, Image.Image):
         return image
     else:
         raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
