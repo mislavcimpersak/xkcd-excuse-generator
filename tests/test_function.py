@@ -2,7 +2,14 @@ from falcon import HTTP_404
 import hug
 
 import app
-from app import img, _get_text_font, _sanitize_input, _decode_hex, _encode_hex
+from app import (
+    img,
+    _get_text_font,
+    _get_text_x_position,
+    _sanitize_input,
+    _decode_hex,
+    _encode_hex
+)
 
 
 def test_img__bad_hex():
@@ -19,6 +26,34 @@ def test_get_text_font():
 
     font = _get_text_font(20)
     assert font.font.family == 'xkcd Script'
+
+
+def test_get_text_x_position__no_text_no_offset():
+    font = _get_text_font(20)
+    result = _get_text_x_position(200, '', font)
+
+    assert result == 100
+
+
+def test_get_text_x_position__with_text_no_offset():
+    font = _get_text_font(20)
+    result = _get_text_x_position(200, 'AAAAAA', font)
+
+    assert result == 67
+
+
+def test_get_text_x_position__no_text_with_offset():
+    font = _get_text_font(20)
+    result = _get_text_x_position(200, '', font, 20)
+
+    assert result == 80
+
+
+def test_get_text_x_position__with_text_with_offset():
+    font = _get_text_font(20)
+    result = _get_text_x_position(200, 'AAAAAA', font, 20)
+
+    assert result == 47
 
 
 def test_sanitize_input__simple():
