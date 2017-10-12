@@ -98,6 +98,8 @@ def img(response, who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hu
 
 
 def get_excuse_image(who: str, why: str, what: str) -> Image:
+    errors = []
+
     who = 'The #1  {} excuse'.format(who).upper()
     legit = 'for legitimately slacking off:'.upper()
     why = '"{}."'.format(why)
@@ -115,28 +117,9 @@ def get_excuse_image(who: str, why: str, what: str) -> Image:
     why_font = _get_text_font(22)
     what_font = _get_text_font(20)
 
-    # who_font, who, 150/image_width, code
-    def _check_user_input_size(image_width, who, why, what, who_font, why_font, what_font):
-        errors = []
-        if who_font.getsize(who)[0] > image_width:
-            errors.append({
-                'code': 1001,
-                'message': '"Who" text too long'
-            })
-        if why_font.getsize(why)[0] > image_width:
-            errors.append({
-                'code': 1002,
-                'message': '"Why" text too long'
-            })
-        if what_font.getsize(what)[0] > 100:
-            errors.append({
-                'code': 1003,
-                'message': '"What" text too long'
-            })
-        return errors
-
-    errors = _check_user_input_size(
-        image_width, who, why, what, who_font, why_font, what_font)
+    errors = _check_user_input_size(errors, image_width, who, who_font, 1001)
+    errors = _check_user_input_size(errors, image_width, why, why_font, 1002)
+    errors = _check_user_input_size(errors, 100, what, what_font, 1003)
 
     if errors:
         return errors
@@ -172,6 +155,32 @@ def _get_text_font(size: int) -> ImageFont:
     :rtype: PIL.ImageFont
     """
     return ImageFont.truetype('xkcd-script.ttf', size)
+
+
+def _check_user_input_size(errors: list, max_width: float, text: str,
+    text_font: ImageFont, error_code: int) -> list:
+    """
+    Checks if user input size can actually fit in image.
+    If not, add an error to existing list of errors.
+
+    :param errors: list of errors
+    :type errors: list
+    :param max_width: max size of text
+    :type max_width: float
+    :param text: user's input
+    :type text: str
+    :param error_code: internal error code
+    :type error_code: int
+
+    :returns: list of errors
+    :rtype: list
+    """
+    if text_font.getsize(text)[0] > max_width:
+        errors.append({
+            'code': error_code,
+            'message': 'Text too long.'
+        })
+    return errors
 
 
 def _get_text_x_position(image_width: int, text: str, text_font: ImageFont, offset: int=None) -> float:
