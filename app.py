@@ -105,24 +105,25 @@ def get_excuse_image(who: str, why: str, what: str) -> Image:
     why = '"{}."'.format(why)
     what = '{}!'.format(what)
 
-    # in the beginning this is an empty image
-    image = Image.open(os.path.join(dir_path, 'blank_excuse.png'), 'r')\
-        .convert('RGBA')
-
-    image_width, image_height = image.size
-    draw = ImageDraw.Draw(image, 'RGBA')
+    # this is a constant and let's keep it that way to save compute time
+    IMAGE_WIDTH = 413
 
     who_font = _get_text_font(24)
     legit_font = _get_text_font(24)
     why_font = _get_text_font(22)
     what_font = _get_text_font(20)
 
-    errors = _check_user_input_size(errors, image_width, who, who_font, 1001)
-    errors = _check_user_input_size(errors, image_width, why, why_font, 1002)
+    errors = _check_user_input_size(errors, IMAGE_WIDTH, who, who_font, 1001)
+    errors = _check_user_input_size(errors, IMAGE_WIDTH, why, why_font, 1002)
     errors = _check_user_input_size(errors, 100, what, what_font, 1003)
 
     if errors:
         return errors
+
+    # in the beginning this is an image without an excuse
+    image = Image.open(os.path.join(dir_path, 'blank_excuse.png'), 'r')\
+        .convert('RGBA')
+    draw = ImageDraw.Draw(image, 'RGBA')
 
     # Y text coordinates are constant
     WHO_TEXT_Y = 12
@@ -130,13 +131,13 @@ def get_excuse_image(who: str, why: str, what: str) -> Image:
     WHY_TEXT_Y = 85
     WHAT_TEXT_Y = 220
 
-    draw.text((_get_text_x_position(image_width, who, who_font), WHO_TEXT_Y),
+    draw.text((_get_text_x_position(IMAGE_WIDTH, who, who_font), WHO_TEXT_Y),
         who, fill=(0, 0, 0, 200), font=who_font)
-    draw.text((_get_text_x_position(image_width, legit, legit_font), LEGIT_TEXT_Y),
+    draw.text((_get_text_x_position(IMAGE_WIDTH, legit, legit_font), LEGIT_TEXT_Y),
         legit, fill=(0, 0, 0, 200), font=legit_font)
-    draw.text((_get_text_x_position(image_width, why, why_font), WHY_TEXT_Y),
+    draw.text((_get_text_x_position(IMAGE_WIDTH, why, why_font), WHY_TEXT_Y),
         why, fill=(0, 0, 0, 200), font=why_font)
-    draw.text((_get_text_x_position(image_width, what, what_font, 25), WHAT_TEXT_Y),
+    draw.text((_get_text_x_position(IMAGE_WIDTH, what, what_font, 25), WHAT_TEXT_Y),
         what, fill=(0, 0, 0, 200), font=what_font)
 
     buffer = BytesIO()
