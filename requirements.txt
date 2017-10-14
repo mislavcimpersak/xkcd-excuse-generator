@@ -1,4 +1,5 @@
 Hug
 Pillow
 python-slugify
+ujson
 zappa
