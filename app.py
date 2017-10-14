@@ -101,7 +101,17 @@ def img(response, who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hu
         raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
 
 
-def get_excuse_image(who: str, why: str, what: str) -> Image:
+def get_excuse_image(who: str, why: str, what: str) -> (Image, list):
+    """
+    Load excuse template and write on it.
+    If there are errors (some text too long), return list of errors.
+
+    :param who: who's excuse
+    :param why: what is the excuse
+    :param what: what are they saying
+
+    :returns: pillow Image object with excuse written on it
+    """
     errors = []
 
     who = 'The #1  {} excuse'.format(who).upper()
