@@ -7,7 +7,7 @@ from io import BytesIO
 import os
 from typing import Union
 
-from falcon import HTTP_404
+from falcon import HTTP_400, HTTP_404
 import hug
 from PIL import Image, ImageDraw, ImageFont
 from slugify import slugify
@@ -29,11 +29,12 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
     versions=1,
     examples='who=programmer&why=my%code%20is%20compiling&what=compiling'
 )
-def excuse(request, who: hug.types.text='', why: hug.types.text='', what: hug.types.text='') -> dict:
+def excuse(request, response, who: hug.types.text='', why: hug.types.text='', what: hug.types.text='') -> dict:
     """
-    API view that returns url to rendered image or errors if there were any.
+    API view that returns JSON with url to rendered image or errors if there
+    were any.
 
-    GET https://function.xkcd-excuse.com/api/v1/?who=one&why=two&what=three
+    GET https://function.xkcd-excuse.com/v1/excuse?who=one&why=two&what=three
     >>
     {
         "errors": [
@@ -76,6 +77,7 @@ def excuse(request, who: hug.types.text='', why: hug.types.text='', what: hug.ty
             }
         }
     else:
+        response.status = HTTP_400
         return {
             'errors': data
         }
