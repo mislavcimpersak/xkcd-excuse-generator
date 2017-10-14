@@ -20,6 +20,11 @@ def test_img__bad_hex():
     assert response.status == HTTP_404
 
 
+def test_img__text_too_long():
+    response = hug.test.get(app, '/media/30-30-434f4d50494c494e47434f4d50494c494e47.png')
+    assert response.status == HTTP_404
+
+
 def test_get_text_font():
     font = _get_text_font(20)
     assert font.size == 20
