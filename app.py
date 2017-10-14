@@ -58,9 +58,9 @@ def excuse(request, who: hug.types.text='', why: hug.types.text='', what: hug.ty
     """
     who, why, what = _sanitize_input(who), _sanitize_input(why), _sanitize_input(what)
 
-    image = get_excuse_image(who, why, what)
+    data = get_excuse_image(who, why, what)
 
-    if isinstance(image, Image.Image):
+    if isinstance(data, Image.Image):
         who_hex, why_hex, what_hex = _encode_hex(who, why, what)
         image_url = '{scheme}://{domain}/media/{who}-{why}-{what}.png'.format(
             scheme=request.scheme,
@@ -76,7 +76,7 @@ def excuse(request, who: hug.types.text='', why: hug.types.text='', what: hug.ty
         }
     else:
         return {
-            'errors': image
+            'errors': data
         }
 
 
