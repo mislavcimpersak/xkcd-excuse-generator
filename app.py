@@ -5,6 +5,7 @@ XKCD Excuse Generator API created using Hug Framework
 from binascii import hexlify, unhexlify, Error as BinAsciiError
 from io import BytesIO
 import os
+from typing import Union
 
 from falcon import HTTP_404
 import hug
@@ -109,7 +110,7 @@ def img(who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.te
         raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
 
 
-def get_excuse_image(who: str, why: str, what: str) -> (Image, list):
+def get_excuse_image(who: str, why: str, what: str) -> Union[Image.Image, list]:
     """
     Load excuse template and write on it.
     If there are errors (some text too long), return list of errors.
