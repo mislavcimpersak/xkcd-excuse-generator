@@ -1,10 +1,9 @@
-from falcon import HTTP_200, HTTP_404
+from falcon import HTTP_200, HTTP_400, HTTP_404
 import hug
 from PIL import Image
 
 import app
 from app import (
-    img,
     get_excuse_image,
     _get_text_font,
     _get_text_x_position,
@@ -12,6 +11,42 @@ from app import (
     _decode_hex,
     _encode_hex
 )
+
+
+def test_excuse__success():
+    OUTPUT = {
+        'data': {
+            'image_url': 'http://falconframework.org/media/30-30-30.png'
+        }
+    }
+    response = hug.test.get(app, '/v1/excuse/', {'who': '0', 'why': '0', 'what': '0'})
+
+    assert response.status == HTTP_200
+    assert response.data == OUTPUT
+
+
+def test_excuse__who_too_long():
+    ERROR_CODE = 1001
+    response = hug.test.get(app, '/v1/excuse/', {'who': 'programmerprogrammer', 'why': '0', 'what': '0'})
+
+    assert response.status == HTTP_400
+    assert response.data['errors'][0]['code'] == ERROR_CODE
+
+
+def test_excuse__why_too_long():
+    ERROR_CODE = 1002
+    response = hug.test.get(app, '/v1/excuse/', {'who': '0', 'why': 'my code is compiling my code is compiling ', 'what': '0'})
+
+    assert response.status == HTTP_400
+    assert response.data['errors'][0]['code'] == ERROR_CODE
+
+
+def test_excuse__what_too_long():
+    ERROR_CODE = 1003
+    response = hug.test.get(app, '/v1/excuse/', {'who': '0', 'why': '0', 'what': 'compilingcompiling'})
+
+    assert response.status == HTTP_400
+    assert response.data['errors'][0]['code'] == ERROR_CODE
 
 
 def test_img__bad_hex():
@@ -40,18 +75,21 @@ def test_get_excuse_image__success():
 
 
 def test_get_excuse_image__who_too_long():
+    ERROR_CODE = 1001
     data = get_excuse_image('programmerprogrammerprogrammer', 'a', 'a')
-    assert data[0]['code'] == 1001
+    assert data[0]['code'] == ERROR_CODE
 
 
 def test_get_excuse_image__why_too_long():
+    ERROR_CODE = 1002
     data = get_excuse_image('a', 'my code is compiling my code is compiling my code is compiling', 'a')
-    assert data[0]['code'] == 1002
+    assert data[0]['code'] == ERROR_CODE
 
 
 def test_get_excuse_image__what_too_long():
+    ERROR_CODE = 1003
     data = get_excuse_image('a', 'a', 'compilingcompilingcompiling')
-    assert data[0]['code'] == 1003
+    assert data[0]['code'] == ERROR_CODE
 
 
 def test_get_text_font():
