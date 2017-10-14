@@ -1,9 +1,11 @@
 from falcon import HTTP_404
 import hug
+from PIL import Image
 
 import app
 from app import (
     img,
+    get_excuse_image,
     _get_text_font,
     _get_text_x_position,
     _sanitize_input,
@@ -23,6 +25,27 @@ def test_img__bad_hex():
 def test_img__text_too_long():
     response = hug.test.get(app, '/media/30-30-434f4d50494c494e47434f4d50494c494e47.png')
     assert response.status == HTTP_404
+
+
+def test_get_excuse_image__success():
+    data = get_excuse_image('programmer', 'my code is compiling', 'compiling')
+    assert isinstance(data, Image.Image)
+    assert data.size == (413, 360)
+
+
+def test_get_excuse_image__who_too_long():
+    data = get_excuse_image('programmerprogrammerprogrammer', 'a', 'a')
+    assert data[0]['code'] == 1001
+
+
+def test_get_excuse_image__why_too_long():
+    data = get_excuse_image('a', 'my code is compiling my code is compiling my code is compiling', 'a')
+    assert data[0]['code'] == 1002
+
+
+def test_get_excuse_image__what_too_long():
+    data = get_excuse_image('a', 'a', 'compilingcompilingcompiling')
+    assert data[0]['code'] == 1003
 
 
 def test_get_text_font():
