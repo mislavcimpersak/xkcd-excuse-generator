@@ -12,6 +12,15 @@ from PIL import Image, ImageDraw, ImageFont
 from slugify import slugify
 
 
+# since base excuse image is fixed, this values are also constant
+IMAGE_WIDTH = 413
+# Y text coordinates
+WHO_TEXT_Y = 12
+LEGIT_TEXT_Y = 38
+WHY_TEXT_Y = 85
+WHAT_TEXT_Y = 220
+
+
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -100,9 +109,6 @@ def get_excuse_image(who: str, why: str, what: str) -> Image:
     why = '"{}."'.format(why)
     what = '{}!'.format(what)
 
-    # this is a constant and let's keep it that way to save compute time
-    IMAGE_WIDTH = 413
-
     who_font = _get_text_font(24)
     legit_font = _get_text_font(24)
     why_font = _get_text_font(22)
@@ -119,12 +125,6 @@ def get_excuse_image(who: str, why: str, what: str) -> Image:
     image = Image.open(os.path.join(dir_path, 'blank_excuse.png'), 'r')\
         .convert('RGBA')
     draw = ImageDraw.Draw(image, 'RGBA')
-
-    # Y text coordinates are constant
-    WHO_TEXT_Y = 12
-    LEGIT_TEXT_Y = 38
-    WHY_TEXT_Y = 85
-    WHAT_TEXT_Y = 220
 
     draw.text((_get_text_x_position(IMAGE_WIDTH, who, who_font), WHO_TEXT_Y),
         who, fill=(0, 0, 0, 200), font=who_font)
