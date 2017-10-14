@@ -16,6 +16,36 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 @hug.get(
+    version=1
+)
+def dummy(request):
+    """
+    Just a dummy view that only access request object to test speed of
+    serialization using wrk.
+
+    Test:
+    wrk -t12 -c400 -d30s https://jed1le8z56.execute-api.eu-central-1.amazonaws.com/dev/v1/dummy
+    3012 req/sec
+    2981 req/sec
+    vs.
+    wrk -t12 -c400 -d30s https://jed1le8z56.execute-api.eu-central-1.amazonaws.com/dev/v1/excuse/\?who\=programmer\&why\=my%20code%20is%20compiling\&what\=compiling
+    1237 req/sec
+    1632 req/sec
+    1915 req/sec
+    2030 req/sec
+    - ako je greška onda smo na 4330 req/sec
+    """
+    return {
+        'domain': request.netloc,
+        'scheme': request.scheme,
+        'access_route': request.access_route,
+        'user_agent': request.user_agent,
+        'cookies': request.cookies,
+        'headers': request.headers,
+    }
+
+
+@hug.get(
     versions=1,
     examples='who=programmer&why=my%code%20is%20compiling&what=compiling'
 )
