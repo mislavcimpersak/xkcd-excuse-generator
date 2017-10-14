@@ -35,10 +35,12 @@ def excuse(request, who: hug.types.text='', why: hug.types.text='', what: hug.ty
     GET https://function.xkcd-excuse.com/api/v1/?who=one&why=two&what=three
     >>
     {
-        "errors": {
-            "code": 1001,
-            "text": "first text two long"  // možda onda imati validaciju pokraj inputa
-        }
+        "errors": [
+            {
+                "code": 1001,
+                "text": "first text two long"  // možda onda imati validaciju pokraj inputa
+            }
+        ],
         "data": {
             "who": "one",
             "why": "two",
