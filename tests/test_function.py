@@ -1,4 +1,4 @@
-from falcon import HTTP_404
+from falcon import HTTP_200, HTTP_404
 import hug
 from PIL import Image
 
@@ -25,6 +25,12 @@ def test_img__bad_hex():
 def test_img__text_too_long():
     response = hug.test.get(app, '/media/30-30-434f4d50494c494e47434f4d50494c494e47.png')
     assert response.status == HTTP_404
+
+
+def test_img__success():
+    response = hug.test.get(app, '/media/30-30-30.png')
+    assert response.status == HTTP_200
+    assert response.content_type == 'image/png'
 
 
 def test_get_excuse_image__success():

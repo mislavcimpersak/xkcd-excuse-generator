@@ -86,9 +86,15 @@ def excuse(request, who: hug.types.text='', why: hug.types.text='', what: hug.ty
     output=hug.output_format.png_image,
     examples='/'
 )
-def img(response, who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.text):
+def img(who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.text):
     """
     Media image view that displays image directly from app.
+
+    :param who_hex: hex representation of user's text
+    :param why_hex: hex representation of user's text
+    :param what_hex: hex representation of user's text
+
+    :returns: hug response
     """
     try:
         who, why, what = _decode_hex(who_hex, why_hex, what_hex)
