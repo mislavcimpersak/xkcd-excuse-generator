@@ -19,7 +19,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
     versions=1,
     examples='who=programmer&why=my%code%20is%20compiling&what=compiling'
 )
-def excuse(request, who: hug.types.text='', why: hug.types.text='', what: hug.types.text=''):
+def excuse(request, who: hug.types.text='', why: hug.types.text='', what: hug.types.text='') -> dict:
     """
     API view that returns url to rendered image or errors if there were any.
 
@@ -39,16 +39,11 @@ def excuse(request, who: hug.types.text='', why: hug.types.text='', what: hug.ty
     }
 
     :param request: request object
-    :type request: falcon.request.Request
     :param who: who's excuse
-    :type who: str
     :param why: what is the excuse
-    :type why: str
     :param what: what are they saying
-    :type what: str
 
     :returns: data dict with url to image or with errors
-    :rtype: dict
     """
     who, why, what = _sanitize_input(who), _sanitize_input(why), _sanitize_input(what)
 
@@ -150,10 +145,8 @@ def _get_text_font(size: int) -> ImageFont:
     Loads font and sets font size for text on image
 
     :param size: font size
-    :type size: int
 
     :returns: ImageFont object with desired font size set
-    :rtype: PIL.ImageFont
     """
     return ImageFont.truetype('xkcd-script.ttf', size)
 
@@ -165,16 +158,11 @@ def _check_user_input_size(errors: list, max_width: float, text: str,
     If not, add an error to existing list of errors.
 
     :param errors: list of errors
-    :type errors: list
     :param max_width: max size of text
-    :type max_width: float
     :param text: user's input
-    :type text: str
     :param error_code: internal error code
-    :type error_code: int
 
     :returns: list of errors
-    :rtype: list
     """
     if text_font.getsize(text)[0] > max_width:
         errors.append({
@@ -189,14 +177,10 @@ def _get_text_x_position(image_width: int, text: str, text_font: ImageFont, offs
     Calculate starting X coordinate for given text and text size.
 
     :param text: user's text
-    :type text: str
     :param text_font:
-    :type text_font: PIL.ImageFont
     :param offset: how much to move from center of the image to the right
-    :type offset: int
 
     :returns: text's X coordinate
-    :rtype: float
     """
     offset = 0 if offset is None else offset
     return image_width - (image_width / 2 + text_font.getsize(text)[0] / 2) - offset
@@ -209,10 +193,8 @@ def _sanitize_input(input: str) -> str:
     uppercase.
 
     :param input: dirty user input from get param
-    :type input: str
 
     :returns: cleaned user input
-    :rtype: str
     """
     return slugify(input.strip(' .'), separator=' ').upper()
 
@@ -222,10 +204,8 @@ def _decode_hex(*texts) -> list:
     Transforms all attrs to regular (human-readable) strings.
 
     :param texts: list of strings to be decoded
-    :type texts: list
 
     :returns: list of hex encoded strings
-    :rtype: list
     """
     return [unhexlify(text).decode() for text in texts]
 
@@ -235,9 +215,7 @@ def _encode_hex(*texts) -> list:
     Transforms all attrs to hex encoded strings.
 
     :param texts: list of string to be encoded
-    :type texts: list
 
     :returns: list of hex values
-    :rtype: list
     """
     return [hexlify(bytes(text, 'utf-8')).decode() for text in texts]
