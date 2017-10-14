@@ -6,32 +6,50 @@ Generate your own excuse in a nifty comic style!
 
 -----
 
-Created for [Python Hrvatska meetup](https://www.meetup.com/Python-Hrvatska/events/242639630/) held on September 12, 2017 and for [Python Belgrade meetup](https://www.meetup.com/PythonBelgrade/events/243547584/) held on September 29, 2017 on which I gave [a talk](https://mislavcimpersak.github.io/serverless-talk/) on serverless technology.
+From this:
 
+![](blank_excuse.png)
+
+to this:
 
 ![](example.png)
 
+through simple API!
+
 ## Usage
 
-Send `first_text` and `second_text` with desired text as GET parameters to function's root URL.
+Send `who`, `why` and `what` with desired text as GET parameters to `/v1/excuse`.
 
-### Using curl:
+Example:
+```
+https://xzmc1m2dgb.execute-api.eu-central-1.amazonaws.com/prod/v1/excuse/?who=serverless%20dev&why=my%20function%20is%20uploading%20to%20aws&what=uploading
+```
+
+You get the simplest api response in the world:
 
 ```
-curl -X GET https://xzmc1m2dgb.execute-api.eu-central-1.amazonaws.com/prod/\?first_text\=my%20function%20is%20uploading\&second_text\=uploading > excuse.png
+{
+    data: {
+        image_url: "http://localhost:8000/media/5345525645524c45535320444556-4d592046554e4354494f4e2049532055504c4f4144494e4720544f20415753-55504c4f4144494e47.png"
+    }
+}
 ```
 
-### Using browser
+Follow the given `image_url` value to get your excuse image.
 
-Visit [function](https://xzmc1m2dgb.execute-api.eu-central-1.amazonaws.com/prod/) in browser and follow instructions.
+-----
 
-## Original image
+Originaly created for [Python Hrvatska meetup](https://www.meetup.com/Python-Hrvatska/events/242639630/) held on September 12, 2017 and for [Python Belgrade meetup](https://www.meetup.com/PythonBelgrade/events/243547584/) held on September 29, 2017 on which I gave [a talk](https://mislavcimpersak.github.io/serverless-talk/) on serverless technology.
+
+## Legal
+
+### Original image
 
 [Original image](https://xkcd.com/303/) created by Randall Munroe from XKCD.
 
 Released under [Creative Commons Attribution-NonCommercial 2.5 License](https://creativecommons.org/licenses/by-nc/2.5/).
 
-## Font
+### Font
 
 [XKCD-Font](https://github.com/ipython/xkcd-font) created by iPython team.
 
