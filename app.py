@@ -26,8 +26,8 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 @hug.get(
-    versions=1,
-    examples='who=programmer&why=my%20code%20is%20compiling&what=compiling'
+    versions=1
+    # examples='who=programmer&why=my%20code%20is%20compiling&what=compiling' TODO
 )
 def excuse(request, response, who: hug.types.text='', why: hug.types.text='', what: hug.types.text='') -> dict:
     """
@@ -88,8 +88,8 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
 @hug.local()
 @hug.get(
     '/media/{who_hex}-{why_hex}-{what_hex}.png',
-    output=hug.output_format.png_image,
-    examples='/'
+    output=hug.output_format.png_image
+    # examples='/'  TODO
 )
 def img(who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.text):
     """
