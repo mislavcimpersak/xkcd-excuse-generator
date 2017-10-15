@@ -27,7 +27,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 @hug.get(
     versions=1,
-    examples='who=programmer&why=my%code%20is%20compiling&what=compiling'
+    examples='who=programmer&why=my%20code%20is%20compiling&what=compiling'
 )
 def excuse(request, response, who: hug.types.text='', why: hug.types.text='', what: hug.types.text='') -> dict:
     """
@@ -64,9 +64,10 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
 
     if isinstance(data, Image.Image):
         who_hex, why_hex, what_hex = _encode_hex(who, why, what)
-        image_url = '{scheme}://{domain}/media/{who}-{why}-{what}.png'.format(
+        image_url = '{scheme}://{domain}/{deploy_stage}/media/{who}-{why}-{what}.png'.format(
             scheme=request.scheme,
             domain=request.netloc,
+            deploy_stage=os.environ.get('DEPLOY_STAGE'),
             who=who_hex,
             why=why_hex,
             what=what_hex
