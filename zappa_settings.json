@@ -3,10 +3,16 @@
         "app_function": "app.__hug_wsgi__",
         "aws_region": "eu-central-1",
         "profile_name": "mislavcimpersak",
-        "s3_bucket": "excuse-generator"
+        "s3_bucket": "excuse-generator",
+        "aws_environment_variables": {
+            "DEPLOY_STAGE": "prod"
+        }
     },
     "dev": {
         "extends": "prod",
-        "debug": true
+        "debug": true,
+        "aws_environment_variables": {
+            "DEPLOY_STAGE": "dev"
+        }
     }
 }

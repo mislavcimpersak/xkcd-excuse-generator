@@ -22,7 +22,7 @@ Send `who`, `why` and `what` with desired text as GET parameters to `/v1/excuse`
 
 Example:
 ```
-https://xzmc1m2dgb.execute-api.eu-central-1.amazonaws.com/prod/v1/excuse/?who=serverless%20dev&why=my%20function%20is%20uploading%20to%20aws&what=uploading
+https://tyiz03gx7h.execute-api.eu-central-1.amazonaws.com/prod/v1/excuse/?who=0&why=my%20code%20is%20compiling&what=compiling
 ```
 
 You get the simplest api response in the world:
@@ -30,7 +30,7 @@ You get the simplest api response in the world:
 ```
 {
     data: {
-        image_url: "http://localhost:8000/media/5345525645524c45535320444556-4d592046554e4354494f4e2049532055504c4f4144494e4720544f20415753-55504c4f4144494e47.png"
+        image_url: "https://tyiz03gx7h.execute-api.eu-central-1.amazonaws.com/media/30-4d5920434f444520495320434f4d50494c494e47-434f4d50494c494e47.png"
     }
 }
 ```
