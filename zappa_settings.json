@@ -1,6 +1,6 @@
 {
     "prod": {
-        "app_function": "app.app",
+        "app_function": "app.__hug_wsgi__",
         "aws_region": "eu-central-1",
         "profile_name": "mislavcimpersak",
         "s3_bucket": "excuse-generator"

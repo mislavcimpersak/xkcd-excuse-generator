@@ -1,79 +1,242 @@
+"""
+XKCD Excuse Generator API created using Hug Framework
+"""
+
+from binascii import hexlify, unhexlify, Error as BinAsciiError
 from io import BytesIO
 import os
+from typing import Union
 
+from falcon import HTTP_400, HTTP_404
+import hug
 from PIL import Image, ImageDraw, ImageFont
-from flask import Flask, send_file
-from flask import request
+from slugify import slugify
 
-app = Flask(__name__)
+
+# since base excuse image is fixed, this values are also constant
+IMAGE_WIDTH = 413
+# Y text coordinates
+WHO_TEXT_Y = 12
+LEGIT_TEXT_Y = 38
+WHY_TEXT_Y = 85
+WHAT_TEXT_Y = 220
+
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
-@app.route('/blank', methods=['GET'])
-def blank():
+@hug.get(
+    versions=1,
+    examples='who=programmer&why=my%code%20is%20compiling&what=compiling'
+)
+def excuse(request, response, who: hug.types.text='', why: hug.types.text='', what: hug.types.text='') -> dict:
     """
-    Serves blank image.
+    API view that returns JSON with url to rendered image or errors if there
+    were any.
+
+    GET https://function.xkcd-excuse.com/v1/excuse?who=one&why=two&what=three
+    >>
+    {
+        "errors": [
+            {
+                "code": 1001,
+                "text": "first text two long"  // možda onda imati validaciju pokraj inputa
+            }
+        ],
+        "data": {
+            "who": "one",
+            "why": "two",
+            "what": "three",
+            "image_url": "function.xkcd-excuse.com/media/<hash>-<hash>-<hash>.png"
+        }
+    }
+
+    :param request: request object
+    :param who: who's excuse
+    :param why: what is the excuse
+    :param what: what are they saying
+
+    :returns: data dict with url to image or with errors
     """
-    with open(os.path.join(dir_path, 'blank_excuse.png'), 'rb') as buffer:
-        return send_file(BytesIO(buffer.read()), mimetype='image/png')
+    who, why, what = _sanitize_input(who), _sanitize_input(why), _sanitize_input(what)
 
+    data = get_excuse_image(who, why, what)
 
-@app.route('/', methods=['GET'])
-def root():
-    """
-    If `first_text` and `second_text` are sent as GET parameters those text
-    will be written on a blank XKCD excuse image.
-
-    This needs a LOT of work. Created in a rush without any proper thought
-    given about code quality :'(
-    """
-    first_text = request.args.get('first_text')
-    second_text = request.args.get('second_text')
-
-    if not first_text or not second_text:
-        # TODO
-        example_url = '{}?first_text=my%20function%20is%20uploading%20to%20aws&second_text=uploading'.format(request.url)
-        return (
-            'Usage: just add GET parameters `first_text` and `second_text` with desired text to the current URL ;)'
-            '<br/><br/><br/> ie. &nbsp;'
-            '<a href="{0}">{0}</a>'.format(example_url)
+    if isinstance(data, Image.Image):
+        who_hex, why_hex, what_hex = _encode_hex(who, why, what)
+        image_url = '{scheme}://{domain}/media/{who}-{why}-{what}.png'.format(
+            scheme=request.scheme,
+            domain=request.netloc,
+            who=who_hex,
+            why=why_hex,
+            what=what_hex
         )
+        return {
+            'data': {
+                'image_url': image_url,
+            }
+        }
+    else:
+        response.status = HTTP_400
+        return {
+            'errors': data
+        }
 
-    first_text = '"{}"'.format(first_text.upper())
-    second_text = '{}!'.format(second_text.strip('!').upper())
 
-    # in the beginning this is an empty image
+@hug.local()
+@hug.get(
+    '/media/{who_hex}-{why_hex}-{what_hex}.png',
+    output=hug.output_format.png_image,
+    examples='/'
+)
+def img(who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.text):
+    """
+    Media image view that displays image directly from app.
+
+    :param who_hex: hex representation of user's text
+    :param why_hex: hex representation of user's text
+    :param what_hex: hex representation of user's text
+
+    :returns: hug response
+    """
+    try:
+        who, why, what = _decode_hex(who_hex, why_hex, what_hex)
+    except (BinAsciiError, UnicodeDecodeError):
+        raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
+
+    image = get_excuse_image(who, why, what)
+
+    if isinstance(image, Image.Image):
+        return image
+    else:
+        raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
+
+
+def get_excuse_image(who: str, why: str, what: str) -> Union[Image.Image, list]:
+    """
+    Load excuse template and write on it.
+    If there are errors (some text too long), return list of errors.
+
+    :param who: who's excuse
+    :param why: what is the excuse
+    :param what: what are they saying
+
+    :returns: pillow Image object with excuse written on it
+    """
+    errors = []
+
+    who = 'The #1  {} excuse'.format(who).upper()
+    legit = 'for legitimately slacking off:'.upper()
+    why = '"{}."'.format(why)
+    what = '{}!'.format(what)
+
+    who_font = _get_text_font(24)
+    legit_font = _get_text_font(24)
+    why_font = _get_text_font(22)
+    what_font = _get_text_font(20)
+
+    errors = _check_user_input_size(errors, IMAGE_WIDTH, who, who_font, 1001)
+    errors = _check_user_input_size(errors, IMAGE_WIDTH, why, why_font, 1002)
+    errors = _check_user_input_size(errors, 100, what, what_font, 1003)
+
+    if errors:
+        return errors
+
+    # in the beginning this is an image without an excuse
     image = Image.open(os.path.join(dir_path, 'blank_excuse.png'), 'r')\
         .convert('RGBA')
-
-    size = width, height = image.size
     draw = ImageDraw.Draw(image, 'RGBA')
-    first_font = ImageFont.truetype(os.path.join(dir_path, 'xkcd-script.ttf'), 22)
-    second_font = ImageFont.truetype(os.path.join(dir_path, 'xkcd-script.ttf'), 20)
 
-    if first_font.getsize(first_text)[0] > width:
-        return 'First text too long'
-
-    if second_font.getsize(second_text)[0] > 100:
-        return 'Second text too long'
-
-    # Y coordinates are constant
-    FIRST_TEXT_Y = 85
-    SECOND_TEXT_Y = 220
-
-    first_text_x = width - (width / 2 + first_font.getsize(first_text)[0] / 2)
-    second_text_x = width - (width / 2 + second_font.getsize(second_text)[0] / 2) - 25
-
-    draw.text((first_text_x, FIRST_TEXT_Y), first_text, fill=(0, 0 ,0 ,200), font=first_font)
-    draw.text((second_text_x, SECOND_TEXT_Y), second_text, fill=(0, 0, 0, 200), font=second_font)
+    draw.text((_get_text_x_position(IMAGE_WIDTH, who, who_font), WHO_TEXT_Y),
+        who, fill=(0, 0, 0, 200), font=who_font)
+    draw.text((_get_text_x_position(IMAGE_WIDTH, legit, legit_font), LEGIT_TEXT_Y),
+        legit, fill=(0, 0, 0, 200), font=legit_font)
+    draw.text((_get_text_x_position(IMAGE_WIDTH, why, why_font), WHY_TEXT_Y),
+        why, fill=(0, 0, 0, 200), font=why_font)
+    draw.text((_get_text_x_position(IMAGE_WIDTH, what, what_font, 25), WHAT_TEXT_Y),
+        what, fill=(0, 0, 0, 200), font=what_font)
 
     buffer = BytesIO()
-    image.save(buffer, format="PNG", quality=85, optimize=True)
-    buffer.seek(0)
-
-    return send_file(buffer, mimetype='image/png')
+    image.save(buffer, format="png")
+    return image
 
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+def _get_text_font(size: int) -> ImageFont:
+    """
+    Loads font and sets font size for text on image
+
+    :param size: font size
+
+    :returns: ImageFont object with desired font size set
+    """
+    return ImageFont.truetype('xkcd-script.ttf', size)
+
+
+def _check_user_input_size(errors: list, max_width: float, text: str,
+    text_font: ImageFont, error_code: int) -> list:
+    """
+    Checks if user input size can actually fit in image.
+    If not, add an error to existing list of errors.
+
+    :param errors: list of errors
+    :param max_width: max size of text
+    :param text: user's input
+    :param error_code: internal error code
+
+    :returns: list of errors
+    """
+    if text_font.getsize(text)[0] > max_width:
+        errors.append({
+            'code': error_code,
+            'message': 'Text too long.'
+        })
+    return errors
+
+
+def _get_text_x_position(image_width: int, text: str, text_font: ImageFont, offset: int=None) -> float:
+    """
+    Calculate starting X coordinate for given text and text size.
+
+    :param text: user's text
+    :param text_font:
+    :param offset: how much to move from center of the image to the right
+
+    :returns: text's X coordinate
+    """
+    offset = 0 if offset is None else offset
+    return image_width - (image_width / 2 + text_font.getsize(text)[0] / 2) - offset
+
+
+def _sanitize_input(input: str) -> str:
+    """
+    Sanitizing input so that it can be hexlifyied.
+    Removes extra spacing, slugifies all non-ascii chars, makes everything
+    uppercase.
+
+    :param input: dirty user input from get param
+
+    :returns: cleaned user input
+    """
+    return slugify(input.strip(' .'), separator=' ').upper()
+
+
+def _decode_hex(*texts) -> list:
+    """
+    Transforms all attrs to regular (human-readable) strings.
+
+    :param texts: list of strings to be decoded
+
+    :returns: list of hex encoded strings
+    """
+    return [unhexlify(text).decode() for text in texts]
+
+
+def _encode_hex(*texts) -> list:
+    """
+    Transforms all attrs to hex encoded strings.
+
+    :param texts: list of string to be encoded
+
+    :returns: list of hex values
+    """
+    return [hexlify(bytes(text, 'utf-8')).decode() for text in texts]
