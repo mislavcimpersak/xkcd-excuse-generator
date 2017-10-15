@@ -30,7 +30,7 @@ You get the simplest api response in the world:
 ```
 {
     data: {
-        image_url: "https://tyiz03gx7h.execute-api.eu-central-1.amazonaws.com/media/30-4d5920434f444520495320434f4d50494c494e47-434f4d50494c494e47.png"
+        image_url: "https://tyiz03gx7h.execute-api.eu-central-1.amazonaws.com/prod/media/30-4d5920434f444520495320434f4d50494c494e47-434f4d50494c494e47.png"
     }
 }
 ```
