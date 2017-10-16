@@ -3,6 +3,7 @@
 Generate your own excuse in a nifty comic style!
 
 [![CircleCI](https://circleci.com/gh/mislavcimpersak/xkcd-excuse-generator/tree/master.svg?style=svg)](https://circleci.com/gh/mislavcimpersak/xkcd-excuse-generator/tree/master)
+[![Coverage Status](https://coveralls.io/repos/github/mislavcimpersak/xkcd-excuse-generator/badge.svg?branch=hotfix%2Fci_cov)](https://coveralls.io/github/mislavcimpersak/xkcd-excuse-generator?branch=hotfix%2Fci_cov)
 
 -----
 

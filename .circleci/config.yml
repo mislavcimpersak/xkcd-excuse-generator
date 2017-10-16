@@ -35,6 +35,8 @@ jobs:
             . ~/venv/bin/activate
             pip install -r requirements_testing.txt
             pytest
+            # COVERALLS_REPO_TOKEN env var set in CircleCI web UI
+            coveralls
 
       - run:
           name: test zappa package creation
