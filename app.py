@@ -37,23 +37,6 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
     API view that returns JSON with url to rendered image or errors if there
     were any.
 
-    GET https://function.xkcd-excuse.com/v1/excuse?who=one&why=two&what=three
-    >>
-    {
-        "errors": [
-            {
-                "code": 1001,
-                "text": "first text two long"  // možda onda imati validaciju pokraj inputa
-            }
-        ],
-        "data": {
-            "who": "one",
-            "why": "two",
-            "what": "three",
-            "image_url": "function.xkcd-excuse.com/media/<hash>-<hash>-<hash>.png"
-        }
-    }
-
     :param request: request object
     :param who: who's excuse
     :param why: what is the excuse
