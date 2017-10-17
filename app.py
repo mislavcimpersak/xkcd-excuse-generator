@@ -73,7 +73,6 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
 @hug.get(
     '/media/{who_hex}-{why_hex}-{what_hex}.png',
     output=hug.output_format.png_image
-    # examples='/'  TODO
 )
 def img(who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.text):
     """
