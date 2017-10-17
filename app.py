@@ -7,7 +7,6 @@ from io import BytesIO
 import os
 from typing import Union
 
-from falcon import HTTP_400, HTTP_404
 import hug
 from PIL import Image, ImageDraw, ImageFont
 from slugify import slugify
@@ -82,7 +81,7 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
             }
         }
     else:
-        response.status = HTTP_400
+        response.status = hug.HTTP_400
         return {
             'errors': data
         }
@@ -107,14 +106,14 @@ def img(who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.te
     try:
         who, why, what = _decode_hex(who_hex, why_hex, what_hex)
     except (BinAsciiError, UnicodeDecodeError):
-        raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
+        raise hug.HTTPError(hug.HTTP_404, 'message', 'invalid image path')
 
     image = get_excuse_image(who, why, what)
 
     if isinstance(image, Image.Image):
         return image
     else:
-        raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
+        raise hug.HTTPError(hug.HTTP_404, 'message', 'invalid image path')
 
 
 def get_excuse_image(who: str, why: str, what: str) -> Union[Image.Image, list]:
