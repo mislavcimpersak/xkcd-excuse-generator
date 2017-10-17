@@ -26,8 +26,12 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 @hug.get(
-    versions=1
-    # examples='who=programmer&why=my%20code%20is%20compiling&what=compiling' TODO
+    versions=1,
+    examples=[
+        'who=programmer&why=my%20code%20is%20compiling&what=compiling',
+        'who=serverless%20dev&why=my%20function%20is%20uploading&what=uploading',
+        'who=devops&why=my%20docker%20image%20is%20building&what=docker'
+    ]
 )
 def excuse(request, response, who: hug.types.text='', why: hug.types.text='', what: hug.types.text='') -> dict:
     """
