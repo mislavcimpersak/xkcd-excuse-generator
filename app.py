@@ -74,7 +74,7 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
     '/media/{who_hex}-{why_hex}-{what_hex}.png',
     output=hug.output_format.png_image
 )
-def img(who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.text):
+def img(response, who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.text):
     """
     Media image view that displays image directly from app.
 
@@ -90,6 +90,11 @@ def img(who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.te
         raise hug.HTTPError(hug.HTTP_404, 'message', 'invalid image path')
 
     image = get_excuse_image(who, why, what)
+
+    # setting cache control headers:
+    # s-maxage for CloudFlare CDN - 30 days
+    # maxage for clients - 3 minutes
+    response.cache_control = ['s-maxage=1800', 'maxage=60', 'public']
 
     if isinstance(image, Image.Image):
         return image
