@@ -98,7 +98,7 @@ def img(who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.te
         raise hug.HTTPError(hug.HTTP_404, 'message', 'invalid image path')
 
 
-def get_excuse_image(who: str, why: str, what: str) -> Union[Image.Image, list]:
+def get_excuse_image(who: str, why: str, what: str):
     """
     Load excuse template and write on it.
     If there are errors (some text too long), return list of errors.
