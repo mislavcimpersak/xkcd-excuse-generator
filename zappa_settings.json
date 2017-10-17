@@ -9,17 +9,11 @@
     },
     "prod": {
         "extends": "common",
-        "aws_environment_variables": {
-            "DEPLOY_STAGE": "prod"
-        },
         "domain": "function.xkcd-excuse.com"
     },
     "dev": {
         "extends": "common",
         "debug": true,
-        "aws_environment_variables": {
-            "DEPLOY_STAGE": "dev"
-        },
         "domain": "function-dev.xkcd-excuse.com"
     }
 }

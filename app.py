@@ -69,10 +69,9 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
     if isinstance(data, Image.Image):
         who_hex, why_hex, what_hex = _encode_hex(who, why, what)
         deploy_stage = os.environ.get('DEPLOY_STAGE')
-        image_url = '{scheme}://{domain}/{deploy_stage}media/{who}-{why}-{what}.png'.format(
+        image_url = '{scheme}://{domain}/media/{who}-{why}-{what}.png'.format(
             scheme=request.scheme,
             domain=request.netloc,
-            deploy_stage='{}/'.format(deploy_stage) if deploy_stage else '',
             who=who_hex,
             why=why_hex,
             what=what_hex
