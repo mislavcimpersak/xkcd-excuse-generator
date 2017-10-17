@@ -5,7 +5,6 @@ XKCD Excuse Generator API created using Hug Framework
 from binascii import hexlify, unhexlify, Error as BinAsciiError
 from io import BytesIO
 import os
-from typing import Union
 
 import hug
 from PIL import Image, ImageDraw, ImageFont
