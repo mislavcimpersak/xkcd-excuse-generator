@@ -5,9 +5,7 @@ XKCD Excuse Generator API created using Hug Framework
 from binascii import hexlify, unhexlify, Error as BinAsciiError
 from io import BytesIO
 import os
-from typing import Union
 
-from falcon import HTTP_400, HTTP_404
 import hug
 from PIL import Image, ImageDraw, ImageFont
 from slugify import slugify
@@ -26,30 +24,17 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 @hug.get(
-    versions=1
-    # examples='who=programmer&why=my%20code%20is%20compiling&what=compiling' TODO
+    versions=1,
+    examples=[
+        'who=programmer&why=my%20code%20is%20compiling&what=compiling',
+        'who=serverless%20dev&why=my%20function%20is%20uploading&what=uploading',
+        'who=devops&why=my%20docker%20image%20is%20building&what=docker'
+    ]
 )
 def excuse(request, response, who: hug.types.text='', why: hug.types.text='', what: hug.types.text='') -> dict:
     """
     API view that returns JSON with url to rendered image or errors if there
     were any.
-
-    GET https://function.xkcd-excuse.com/v1/excuse?who=one&why=two&what=three
-    >>
-    {
-        "errors": [
-            {
-                "code": 1001,
-                "text": "first text two long"  // možda onda imati validaciju pokraj inputa
-            }
-        ],
-        "data": {
-            "who": "one",
-            "why": "two",
-            "what": "three",
-            "image_url": "function.xkcd-excuse.com/media/<hash>-<hash>-<hash>.png"
-        }
-    }
 
     :param request: request object
     :param who: who's excuse
@@ -64,11 +49,9 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
 
     if isinstance(data, Image.Image):
         who_hex, why_hex, what_hex = _encode_hex(who, why, what)
-        deploy_stage = os.environ.get('DEPLOY_STAGE')
-        image_url = '{scheme}://{domain}/{deploy_stage}media/{who}-{why}-{what}.png'.format(
+        image_url = '{scheme}://{domain}/media/{who}-{why}-{what}.png'.format(
             scheme=request.scheme,
             domain=request.netloc,
-            deploy_stage='{}/'.format(deploy_stage) if deploy_stage else '',
             who=who_hex,
             why=why_hex,
             what=what_hex
@@ -79,7 +62,7 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
             }
         }
     else:
-        response.status = HTTP_400
+        response.status = hug.HTTP_400
         return {
             'errors': data
         }
@@ -89,9 +72,8 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
 @hug.get(
     '/media/{who_hex}-{why_hex}-{what_hex}.png',
     output=hug.output_format.png_image
-    # examples='/'  TODO
 )
-def img(who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.text):
+def img(response, who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.text):
     """
     Media image view that displays image directly from app.
 
@@ -104,17 +86,22 @@ def img(who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hug.types.te
     try:
         who, why, what = _decode_hex(who_hex, why_hex, what_hex)
     except (BinAsciiError, UnicodeDecodeError):
-        raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
+        raise hug.HTTPError(hug.HTTP_404, 'message', 'invalid image path')
 
     image = get_excuse_image(who, why, what)
+
+    # setting cache control headers (will be increased later on):
+    # s-maxage for CloudFlare CDN - 3 hours
+    # maxage for clients - 1 minute
+    response.cache_control = ['s-maxage=1800', 'maxage=60', 'public']
 
     if isinstance(image, Image.Image):
         return image
     else:
-        raise hug.HTTPError(HTTP_404, 'message', 'invalid image path')
+        raise hug.HTTPError(hug.HTTP_404, 'message', 'invalid image path')
 
 
-def get_excuse_image(who: str, why: str, what: str) -> Union[Image.Image, list]:
+def get_excuse_image(who: str, why: str, what: str):
     """
     Load excuse template and write on it.
     If there are errors (some text too long), return list of errors.
