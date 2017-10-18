@@ -90,9 +90,9 @@ def img(response, who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hu
 
     image = get_excuse_image(who, why, what)
 
-    # setting cache control headers:
-    # s-maxage for CloudFlare CDN - 30 days
-    # maxage for clients - 3 minutes
+    # setting cache control headers (will be increased later on):
+    # s-maxage for CloudFlare CDN - 3 hours
+    # maxage for clients - 1 minute
     response.cache_control = ['s-maxage=1800', 'maxage=60', 'public']
 
     if isinstance(image, Image.Image):
