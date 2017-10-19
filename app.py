@@ -229,3 +229,14 @@ def _encode_hex(*texts) -> list:
     :returns: list of hex values
     """
     return [hexlify(bytes(text, 'utf-8')).decode() for text in texts]
+
+
+
+# datadog monitoring
+# import falcon
+from ddtrace import tracer
+from ddtrace.contrib.falcon import TraceMiddleware
+
+mw = TraceMiddleware(tracer, __name__)
+# falcon.API(middleware=[mw])
+__hug__.http.add_middleware(mw)
