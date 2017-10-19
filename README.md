@@ -44,7 +44,7 @@ Originaly created for [Python Hrvatska meetup](https://www.meetup.com/Python-Hrv
 
 ## Tech
 
-Created using [Hug Framework](https://github.com/timothycrosley/hug), packaged with [Zappa](https://github.com/Miserlou/Zappa/) and served from AWS Lambda.
+Run with Python 3.6, created using [Hug Framework](https://github.com/timothycrosley/hug), packaged with [Zappa](https://github.com/Miserlou/Zappa/) and served from AWS Lambda.
 
 ## Legal
 
