@@ -14,6 +14,10 @@
     "dev": {
         "extends": "common",
         "debug": true,
-        "domain": "function-dev.xkcd-excuse.com"
+        "domain": "function-dev.xkcd-excuse.com",
+        "aws_environment_variables": {
+            "DATADOG_TRACE_ENABLED": true,
+            "DATADOG_TRACE_DEBUG": true
+        }
     }
 }
