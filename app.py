@@ -43,6 +43,18 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
 
     :returns: data dict with url to image or with errors
     """
+    # datadog sending data
+    import time
+    unix_epoch_timestamp = int(time.time())
+    value = 42
+    metric_type = 'count'
+    metric_name = 'my.metric.name'
+    tags = ['tag1:value', 'tag2']
+    print('MONITORING|{0}|{1}|{2}|{3}|#{4}'.format(
+        unix_epoch_timestamp, value, metric_type, metric_name, ','.join(tags)
+    ))
+    # end datadog
+
     who, why, what = _sanitize_input(who), _sanitize_input(why), _sanitize_input(what)
 
     data = get_excuse_image(who, why, what)
