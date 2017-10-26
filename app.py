@@ -36,6 +36,8 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
     API view that returns JSON with url to rendered image or errors if there
     were any.
 
+    Caching of JSON response is done in Cloudflare CDN's Page Rules section.
+
     :param request: request object
     :param who: who's excuse
     :param why: what is the excuse
