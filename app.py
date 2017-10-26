@@ -47,6 +47,11 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
 
     data = get_excuse_image(who, why, what)
 
+    # setting cache control headers (will be increased later on):
+    # s-maxage for CloudFlare CDN - 3 hours
+    # maxage for clients - 1 minute
+    response.cache_control = ['s-maxage=1800', 'maxage=60', 'public']
+
     if isinstance(data, Image.Image):
         who_hex, why_hex, what_hex = _encode_hex(who, why, what)
         image_url = '{scheme}://{domain}/media/{who}-{why}-{what}.png'.format(
