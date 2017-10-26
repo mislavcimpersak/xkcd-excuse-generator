@@ -36,6 +36,8 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
     API view that returns JSON with url to rendered image or errors if there
     were any.
 
+    Caching of JSON response is done in Cloudflare CDN's Page Rules section.
+
     :param request: request object
     :param who: who's excuse
     :param why: what is the excuse
@@ -46,11 +48,6 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
     who, why, what = _sanitize_input(who), _sanitize_input(why), _sanitize_input(what)
 
     data = get_excuse_image(who, why, what)
-
-    # setting cache control headers (will be increased later on):
-    # s-maxage for CloudFlare CDN - 3 hours
-    # maxage for clients - 1 minute
-    response.cache_control = ['s-maxage=1800', 'maxage=60', 'public']
 
     if isinstance(data, Image.Image):
         who_hex, why_hex, what_hex = _encode_hex(who, why, what)
