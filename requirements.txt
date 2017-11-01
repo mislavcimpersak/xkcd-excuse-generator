@@ -1,5 +1,5 @@
-Hug
-Pillow
-python-slugify
-ujson
-zappa
+Hug==2.3.2
+Pillow==4.3.0
+python-slugify==1.2.4
+ujson==1.35
+zappa==0.44.3
