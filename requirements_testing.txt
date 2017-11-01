@@ -1,6 +1,6 @@
 -r requirements.txt
 
-pytest
-pytest-cov
-pytest-sugar
-coveralls
+pytest==3.2.3
+pytest-cov==2.5.1
+pytest-sugar==0.9.0
+coveralls==1.2.0
