@@ -11,6 +11,11 @@ from PIL import Image, ImageDraw, ImageFont
 from slugify import slugify
 
 
+api = hug.API(__name__)
+api.http.add_middleware(hug.middleware.CORSMiddleware(
+    api, allow_origins=['*'], max_age=600))
+
+
 # since base excuse image is fixed, this values are also constant
 IMAGE_WIDTH = 413
 # Y text coordinates
@@ -126,9 +131,9 @@ def get_excuse_image(who: str, why: str, what: str):
     why_font = _get_text_font(22)
     what_font = _get_text_font(20)
 
-    errors = _check_user_input_size(errors, IMAGE_WIDTH, who, who_font, 1001)
-    errors = _check_user_input_size(errors, IMAGE_WIDTH, why, why_font, 1002)
-    errors = _check_user_input_size(errors, 100, what, what_font, 1003)
+    errors = _check_user_input_size(errors, IMAGE_WIDTH, who, who_font, 1011)
+    errors = _check_user_input_size(errors, IMAGE_WIDTH, why, why_font, 1021)
+    errors = _check_user_input_size(errors, 100, what, what_font, 1031)
 
     if errors:
         return errors
@@ -172,6 +177,7 @@ def _check_user_input_size(errors: list, max_width: float, text: str,
     :param errors: list of errors
     :param max_width: max size of text
     :param text: user's input
+    :param text_font: font to be displayed on image
     :param error_code: internal error code
 
     :returns: list of errors

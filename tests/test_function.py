@@ -26,7 +26,7 @@ def test_excuse__success():
 
 
 def test_excuse__who_too_long():
-    ERROR_CODE = 1001
+    ERROR_CODE = 1011
     response = hug.test.get(app, '/v1/excuse/', {'who': 'programmerprogrammer', 'why': '0', 'what': '0'})
 
     assert response.status == HTTP_400
@@ -34,7 +34,7 @@ def test_excuse__who_too_long():
 
 
 def test_excuse__why_too_long():
-    ERROR_CODE = 1002
+    ERROR_CODE = 1021
     response = hug.test.get(app, '/v1/excuse/', {'who': '0', 'why': 'my code is compiling my code is compiling ', 'what': '0'})
 
     assert response.status == HTTP_400
@@ -42,7 +42,7 @@ def test_excuse__why_too_long():
 
 
 def test_excuse__what_too_long():
-    ERROR_CODE = 1003
+    ERROR_CODE = 1031
     response = hug.test.get(app, '/v1/excuse/', {'who': '0', 'why': '0', 'what': 'compilingcompiling'})
 
     assert response.status == HTTP_400
@@ -75,19 +75,19 @@ def test_get_excuse_image__success():
 
 
 def test_get_excuse_image__who_too_long():
-    ERROR_CODE = 1001
+    ERROR_CODE = 1011
     data = get_excuse_image('programmerprogrammerprogrammer', 'a', 'a')
     assert data[0]['code'] == ERROR_CODE
 
 
 def test_get_excuse_image__why_too_long():
-    ERROR_CODE = 1002
+    ERROR_CODE = 1021
     data = get_excuse_image('a', 'my code is compiling my code is compiling my code is compiling', 'a')
     assert data[0]['code'] == ERROR_CODE
 
 
 def test_get_excuse_image__what_too_long():
-    ERROR_CODE = 1003
+    ERROR_CODE = 1031
     data = get_excuse_image('a', 'a', 'compilingcompilingcompiling')
     assert data[0]['code'] == ERROR_CODE
 
