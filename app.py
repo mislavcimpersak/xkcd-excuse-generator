@@ -131,9 +131,9 @@ def get_excuse_image(who: str, why: str, what: str):
     why_font = _get_text_font(22)
     what_font = _get_text_font(20)
 
-    errors = _check_user_input_size(errors, IMAGE_WIDTH, who, who_font, 1001)
-    errors = _check_user_input_size(errors, IMAGE_WIDTH, why, why_font, 1002)
-    errors = _check_user_input_size(errors, 100, what, what_font, 1003)
+    errors = _check_user_input_size(errors, IMAGE_WIDTH, who, who_font, 1011)
+    errors = _check_user_input_size(errors, IMAGE_WIDTH, why, why_font, 1021)
+    errors = _check_user_input_size(errors, 100, what, what_font, 1031)
 
     if errors:
         return errors
