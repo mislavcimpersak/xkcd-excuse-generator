@@ -11,6 +11,11 @@ from PIL import Image, ImageDraw, ImageFont
 from slugify import slugify
 
 
+api = hug.API(__name__)
+api.http.add_middleware(hug.middleware.CORSMiddleware(
+    api, allow_origins=['*'], max_age=600))
+
+
 # since base excuse image is fixed, this values are also constant
 IMAGE_WIDTH = 413
 # Y text coordinates
