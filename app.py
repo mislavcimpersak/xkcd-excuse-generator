@@ -177,6 +177,7 @@ def _check_user_input_size(errors: list, max_width: float, text: str,
     :param errors: list of errors
     :param max_width: max size of text
     :param text: user's input
+    :param text_font: font to be displayed on image
     :param error_code: internal error code
 
     :returns: list of errors
