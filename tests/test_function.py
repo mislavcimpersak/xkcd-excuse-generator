@@ -74,6 +74,24 @@ def test_get_excuse_image__success():
     assert data.size == (413, 360)
 
 
+def test_get_excuse_image__who_missing():
+    ERROR_CODE = 1010
+    data = get_excuse_image('', 'a', 'a')
+    assert data[0]['code'] == ERROR_CODE
+
+
+def test_get_excuse_image__why_missing():
+    ERROR_CODE = 1020
+    data = get_excuse_image('a', '', 'a')
+    assert data[0]['code'] == ERROR_CODE
+
+
+def test_get_excuse_image__what_missing():
+    ERROR_CODE = 1030
+    data = get_excuse_image('a', 'a', '')
+    assert data[0]['code'] == ERROR_CODE
+
+
 def test_get_excuse_image__who_too_long():
     ERROR_CODE = 1011
     data = get_excuse_image('programmerprogrammerprogrammer', 'a', 'a')
@@ -90,6 +108,23 @@ def test_get_excuse_image__what_too_long():
     ERROR_CODE = 1031
     data = get_excuse_image('a', 'a', 'compilingcompilingcompiling')
     assert data[0]['code'] == ERROR_CODE
+
+
+def test_get_excuse_image__who_too_long__why_missing():
+    ERROR_CODE_WHO_TOO_LONG = 1011
+    ERROR_CODE_WHY_MISSING = 1020
+    data = get_excuse_image('programmerprogrammerprogrammer', '', 'a')
+    assert set([error['code'] for error in data]) == \
+        set([ERROR_CODE_WHO_TOO_LONG, ERROR_CODE_WHY_MISSING])
+
+
+def test_get_excuse_image__who_missing__why_missing__what_too_long():
+    ERROR_CODE_WHO_MISSING = 1010
+    ERROR_CODE_WHY_MISSING = 1020
+    ERROR_CODE_WHAT_TOO_LONG = 1031
+    data = get_excuse_image('', '', 'compilingcompilingcompiling')
+    assert set([error['code'] for error in data]) == \
+        set([ERROR_CODE_WHO_MISSING, ERROR_CODE_WHY_MISSING, ERROR_CODE_WHAT_TOO_LONG])
 
 
 def test_get_text_font():
