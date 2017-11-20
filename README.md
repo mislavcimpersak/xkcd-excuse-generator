@@ -7,19 +7,25 @@ Generate your own excuse in a nifty comic style!
 
 -----
 
-From this:
+Go to [xkcd-excuse.com](https://xkcd-excuse.com) and go from this:
 
-![](blank_excuse.png)
+![](https://github.com/mislavcimpersak/xkcd-excuse-generator/raw/master/blank_excuse.png)
 
 to this:
 
-![](example.png)
+![](https://github.com/mislavcimpersak/xkcd-excuse-generator/raw/master/example.png)
 
-through simple API!
+using a simple form!
 
-## Usage
+-----
 
-Send `who`, `why` and `what` with desired text as GET parameters to `/v1/excuse`.
+Originaly created as an example for [Python Hrvatska meetup](https://www.meetup.com/Python-Hrvatska/events/242639630/) held on September 12, 2017 and for [Python Belgrade meetup](https://www.meetup.com/PythonBelgrade/events/243547584/) held on September 29, 2017 on which I gave [a talk](https://mislavcimpersak.github.io/serverless-talk/) on serverless technology.
+
+## API Usage
+
+If you are feeling extra wild you can use the API directly.
+
+Send `who`, `why` and `what` with desired text as GET parameters to `https://function.xkcd-excuse.com/v1/excuse`
 
 Example:
 ```
@@ -37,10 +43,6 @@ You get the simplest api response in the world:
 ```
 
 Follow the given `image_url` value to get your excuse image.
-
------
-
-Originaly created for [Python Hrvatska meetup](https://www.meetup.com/Python-Hrvatska/events/242639630/) held on September 12, 2017 and for [Python Belgrade meetup](https://www.meetup.com/PythonBelgrade/events/243547584/) held on September 29, 2017 on which I gave [a talk](https://mislavcimpersak.github.io/serverless-talk/) on serverless technology.
 
 ## Tech
 
