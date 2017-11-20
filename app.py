@@ -111,7 +111,8 @@ def img(response, who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hu
 def get_excuse_image(who: str, why: str, what: str):
     """
     Load excuse template and write on it.
-    If there are errors (some text too long), return list of errors.
+    If there are errors (non-existant text, some text too long),
+    return list of errors.
 
     :param who: who's excuse
     :param why: what is the excuse
@@ -120,6 +121,10 @@ def get_excuse_image(who: str, why: str, what: str):
     :returns: pillow Image object with excuse written on it
     """
     errors = []
+
+    errors = _check_user_input_not_empty(errors, who, 1010)
+    errors = _check_user_input_not_empty(errors, why, 1020)
+    errors = _check_user_input_not_empty(errors, what, 1030)
 
     who = 'The #1  {} excuse'.format(who).upper()
     legit = 'for legitimately slacking off:'.upper()
@@ -166,6 +171,26 @@ def _get_text_font(size: int) -> ImageFont:
     :returns: ImageFont object with desired font size set
     """
     return ImageFont.truetype('xkcd-script.ttf', size)
+
+
+def _check_user_input_not_empty(
+    errors: list, text: str, error_code: int) -> list:
+    """
+    Checks if user input size can actually fit in image.
+    If not, add an error to existing list of errors.
+
+    :param errors: list of errors
+    :param text: user's input
+    :param error_code: internal error code
+
+    :returns: list of errors
+    """
+    if not text or text.strip() == '':
+        errors.append({
+            'code': error_code,
+            'message': 'This field is required.'
+        })
+    return errors
 
 
 def _check_user_input_size(errors: list, max_width: float, text: str,
