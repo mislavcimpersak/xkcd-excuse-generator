@@ -14,6 +14,7 @@
     "dev": {
         "extends": "common",
         "debug": true,
+        "keep_warm": false,
         "domain": "function-dev.xkcd-excuse.com"
     }
 }
