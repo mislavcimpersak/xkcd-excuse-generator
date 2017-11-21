@@ -1,69 +1,20 @@
 {
     "common": {
         "app_function": "app.__hug_wsgi__",
+        "aws_region": "eu-central-1",
         "s3_bucket": "excuse-generator",
         "profile_name": "mislavcimpersak",
         "route53_enabled": false,
         "certificate_arn": "arn:aws:acm:us-east-1:500819636056:certificate/3edb9c1c-12c5-4601-89a9-dc42df840fa6"
     },
+    "prod": {
+        "extends": "common",
+        "domain": "function.xkcd-excuse.com"
+    },
     "dev": {
         "extends": "common",
-        "aws_region": "eu-central-1",
         "debug": true,
         "keep_warm": false,
         "domain": "function-dev.xkcd-excuse.com"
-    },
-    "prod": {
-        "extends": "common",
-        "aws_region": null,
-        "domain": "function.xkcd-excuse.com"
-    },
-    "prod_ap_northeast_1": {
-        "aws_region": "ap-northeast-1",
-        "extends": "prod"
-    },
-    "prod_ap_northeast_2": {
-        "aws_region": "ap-northeast-2",
-        "extends": "prod"
-    },
-    "prod_ap_south_1": {
-        "aws_region": "ap-south-1",
-        "extends": "prod"
-    },
-    "prod_ap_southeast_1": {
-        "aws_region": "ap-southeast-1",
-        "extends": "prod"
-    },
-    "prod_ap_southeast_2": {
-        "aws_region": "ap-southeast-2",
-        "extends": "prod"
-    },
-    "prod_eu_central_1": {
-        "aws_region": "eu-central-1",
-        "extends": "prod"
-    },
-    "prod_eu_west_1": {
-        "aws_region": "eu-west-1",
-        "extends": "prod"
-    },
-    "prod_eu_west_2": {
-        "aws_region": "eu-west-2",
-        "extends": "prod"
-    },
-    "prod_us_east_1": {
-        "aws_region": "us-east-1",
-        "extends": "prod"
-    },
-    "prod_us_east_2": {
-        "aws_region": "us-east-2",
-        "extends": "prod"
-    },
-    "prod_us_west_1": {
-        "aws_region": "us-west-1",
-        "extends": "prod"
-    },
-    "prod_us_west_2": {
-        "aws_region": "us-west-2",
-        "extends": "prod"
     }
 }
