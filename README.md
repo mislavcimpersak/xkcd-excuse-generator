@@ -9,11 +9,11 @@ Generate your own excuse in a nifty comic style!
 
 Go to [xkcd-excuse.com](https://xkcd-excuse.com) and go from this:
 
-![](https://github.com/mislavcimpersak/xkcd-excuse-generator/raw/master/blank_excuse.png)
+![](blank_excuse.png)
 
 to this:
 
-![](https://github.com/mislavcimpersak/xkcd-excuse-generator/raw/master/example.png)
+![](example.png)
 
 using a simple form!
 
@@ -23,7 +23,7 @@ Originaly created as an example for [Python Hrvatska meetup](https://www.meetup.
 
 -----
 
-This repo is the backend part of the xkcd-excuse.com project. Code for the frontend part can be found in [xkcd-excuse-front](https://github.com/mislavcimpersak/xkcd-excuse-front) repo.
+This repo is the backend part of the [xkcd-excuse.com](https://xkcd-excuse.com) project. Code for the frontend part can be found in [xkcd-excuse-front](https://github.com/mislavcimpersak/xkcd-excuse-front) repo.
 
 ## API Usage
 
@@ -51,6 +51,15 @@ Follow the given `image_url` value to get your excuse image.
 ## Tech
 
 Run with Python 3.6, created using [Hug Framework](https://github.com/timothycrosley/hug), packaged with [Zappa](https://github.com/Miserlou/Zappa/) and served from AWS Lambda.
+
+For frontend tech checkout the [XKCD excuse front](https://github.com/mislavcimpersak/xkcd-excuse-front#tech) repo's README.
+
+
+### Infrastructure
+
+Since this is a side project that will obviously never make any money, costs should idealy be minimal. Everything is served behind CloudFlare CDN, even the API that is served from AWS Lambda through AWS API Gateway. Frontend is served on Github Pages.
+
+![](infrastructure.png)
 
 ## Legal
 
