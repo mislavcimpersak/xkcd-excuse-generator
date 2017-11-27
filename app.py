@@ -70,6 +70,7 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
         }
     else:
         response.status = hug.HTTP_400
+        response.cache_control = ['s-maxage=1800', 'maxage=60', 'public']
         return {
             'errors': data
         }
