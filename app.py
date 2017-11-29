@@ -22,7 +22,7 @@ IMAGE_WIDTH = 413
 WHO_TEXT_Y = 12
 LEGIT_TEXT_Y = 38
 WHY_TEXT_Y = 85
-WHAT_TEXT_Y = 220
+WHAT_TEXT_Y = 222
 
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -135,11 +135,11 @@ def get_excuse_image(who: str, why: str, what: str):
     who_font = _get_text_font(24)
     legit_font = _get_text_font(24)
     why_font = _get_text_font(22)
-    what_font = _get_text_font(20)
+    what_font = _get_text_font(18)
 
     errors = _check_user_input_size(errors, IMAGE_WIDTH, who, who_font, 1011)
     errors = _check_user_input_size(errors, IMAGE_WIDTH, why, why_font, 1021)
-    errors = _check_user_input_size(errors, 100, what, what_font, 1031)
+    errors = _check_user_input_size(errors, 135, what, what_font, 1031)
 
     if errors:
         return errors
@@ -155,7 +155,7 @@ def get_excuse_image(who: str, why: str, what: str):
         legit, fill=(0, 0, 0, 200), font=legit_font)
     draw.text((_get_text_x_position(IMAGE_WIDTH, why, why_font), WHY_TEXT_Y),
         why, fill=(0, 0, 0, 200), font=why_font)
-    draw.text((_get_text_x_position(IMAGE_WIDTH, what, what_font, 25), WHAT_TEXT_Y),
+    draw.text((_get_text_x_position(IMAGE_WIDTH, what, what_font, 24), WHAT_TEXT_Y),
         what, fill=(0, 0, 0, 200), font=what_font)
 
     buffer = BytesIO()
