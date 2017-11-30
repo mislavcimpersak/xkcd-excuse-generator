@@ -193,9 +193,6 @@ def _check_user_input_not_empty(
 
     :returns: list of errors
     """
-    if 'raise' in text.lower():
-        raise Exception('exception to test bugsnag')
-
     if not text or text.strip() == '':
         errors.append({
             'code': error_code,
