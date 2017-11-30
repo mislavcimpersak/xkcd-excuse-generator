@@ -177,6 +177,7 @@ def _get_text_font(size: int) -> ImageFont:
 
     :returns: ImageFont object with desired font size set
     """
+    raise Exception('testing bugsnag from dev stage')
     return ImageFont.truetype('xkcd-script.ttf', size)
 
 
