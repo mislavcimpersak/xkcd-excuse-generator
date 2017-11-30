@@ -177,7 +177,6 @@ def _get_text_font(size: int) -> ImageFont:
 
     :returns: ImageFont object with desired font size set
     """
-    raise Exception('testing bugsnag from dev stage')
     return ImageFont.truetype('xkcd-script.ttf', size)
 
 
@@ -194,6 +193,9 @@ def _check_user_input_not_empty(
 
     :returns: list of errors
     """
+    if 'raise' in text.lower():
+        raise Exception('exception to test bugsnag')
+
     if not text or text.strip() == '':
         errors.append({
             'code': error_code,
