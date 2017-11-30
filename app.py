@@ -6,6 +6,7 @@ from binascii import hexlify, unhexlify, Error as BinAsciiError
 from io import BytesIO
 import os
 
+import bugsnag
 import hug
 from PIL import Image, ImageDraw, ImageFont
 from slugify import slugify
@@ -26,8 +27,10 @@ WHAT_TEXT_Y = 222
 
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
+bugsnag_client = bugsnag.Client(api_key=os.environ.get('BUGSNAG_KEY'))
 
 
+@bugsnag_client.capture
 @hug.get(
     versions=1,
     examples=[
@@ -76,6 +79,7 @@ def excuse(request, response, who: hug.types.text='', why: hug.types.text='', wh
         }
 
 
+@bugsnag_client.capture
 @hug.local()
 @hug.get(
     '/media/{who_hex}-{why_hex}-{what_hex}.png',
@@ -109,6 +113,7 @@ def img(response, who_hex: hug.types.text, why_hex: hug.types.text, what_hex: hu
         raise hug.HTTPError(hug.HTTP_404, 'message', 'invalid image path')
 
 
+@bugsnag_client.capture
 def get_excuse_image(who: str, why: str, what: str):
     """
     Load excuse template and write on it.
@@ -163,6 +168,7 @@ def get_excuse_image(who: str, why: str, what: str):
     return image
 
 
+@bugsnag_client.capture
 def _get_text_font(size: int) -> ImageFont:
     """
     Loads font and sets font size for text on image
@@ -174,6 +180,7 @@ def _get_text_font(size: int) -> ImageFont:
     return ImageFont.truetype('xkcd-script.ttf', size)
 
 
+@bugsnag_client.capture
 def _check_user_input_not_empty(
     errors: list, text: str, error_code: int) -> list:
     """
@@ -194,6 +201,7 @@ def _check_user_input_not_empty(
     return errors
 
 
+@bugsnag_client.capture
 def _check_user_input_size(errors: list, max_width: float, text: str,
     text_font: ImageFont, error_code: int) -> list:
     """
@@ -216,6 +224,7 @@ def _check_user_input_size(errors: list, max_width: float, text: str,
     return errors
 
 
+@bugsnag_client.capture
 def _get_text_x_position(image_width: int, text: str, text_font: ImageFont, offset: int=None) -> float:
     """
     Calculate starting X coordinate for given text and text size.
@@ -230,6 +239,7 @@ def _get_text_x_position(image_width: int, text: str, text_font: ImageFont, offs
     return image_width - (image_width / 2 + text_font.getsize(text)[0] / 2) - offset
 
 
+@bugsnag_client.capture
 def _sanitize_input(input: str) -> str:
     """
     Sanitizing input so that it can be hexlifyied.
@@ -243,6 +253,7 @@ def _sanitize_input(input: str) -> str:
     return slugify(input.strip(' .'), separator=' ').upper()
 
 
+@bugsnag_client.capture
 def _decode_hex(*texts) -> list:
     """
     Transforms all attrs to regular (human-readable) strings.
@@ -254,6 +265,7 @@ def _decode_hex(*texts) -> list:
     return [unhexlify(text).decode() for text in texts]
 
 
+@bugsnag_client.capture
 def _encode_hex(*texts) -> list:
     """
     Transforms all attrs to hex encoded strings.
@@ -263,3 +275,11 @@ def _encode_hex(*texts) -> list:
     :returns: list of hex values
     """
     return [hexlify(bytes(text, 'utf-8')).decode() for text in texts]
+
+
+def bugsnag_unhandled_exception(e, event, context):  # pragma: no cover
+    """
+    Sending exceptions to Bugsnag.
+    """
+    bugsnag_client(e, event)
+    return True  # Prevent invocation retry
