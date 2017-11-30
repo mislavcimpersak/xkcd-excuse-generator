@@ -277,6 +277,9 @@ def _encode_hex(*texts) -> list:
     return [hexlify(bytes(text, 'utf-8')).decode() for text in texts]
 
 
-def unhandled_exception(e, event, context):
+def bugsnag_unhandled_exception(e, event, context):  # pragma: no cover
+    """
+    Sending exceptions to Bugsnag.
+    """
     bugsnag_client(e, event)
     return True  # Prevent invocation retry
