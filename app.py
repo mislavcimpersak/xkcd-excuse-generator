@@ -278,3 +278,8 @@ def _encode_hex(*texts) -> list:
     :returns: list of hex values
     """
     return [hexlify(bytes(text, 'utf-8')).decode() for text in texts]
+
+
+def unhandled_exception(e, event, context):
+    bugsnag_client(e, event)
+    return True  # Prevent invocation retry
