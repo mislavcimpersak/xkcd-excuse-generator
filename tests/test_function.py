@@ -193,6 +193,12 @@ def test_sanitize_input__sentence_extra_spacing_non_ascii():
     assert _sanitize_input(INPUT) == OUTPUT
 
 
+def test_sanitize_input__special_chars():
+    INPUT = 'My code is + * ? [] @ # 100% special'
+    OUTPUT = 'MY CODE IS + * ? [] @ # 100% SPECIAL'
+    assert _sanitize_input(INPUT) == OUTPUT
+
+
 def test_decode_hex():
     INPUT_1 = '50524f4752414d4d4552'
     INPUT_2 = '4d5920434f444520495320434f4d50494c494e47'
