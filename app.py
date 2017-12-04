@@ -250,7 +250,9 @@ def _sanitize_input(input: str) -> str:
 
     :returns: cleaned user input
     """
-    return slugify(input.strip(' .'), separator=' ').upper()
+    regex_pattern = r'[^\x00-\x7F]+'
+    return slugify(
+        input.strip(' .!'), separator=' ', regex_pattern=regex_pattern).upper()
 
 
 @bugsnag_client.capture
