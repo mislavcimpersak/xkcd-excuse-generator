@@ -1,4 +1,4 @@
-Hug==2.3.2
+Hug>=2.4.1
 Pillow==4.3.0
 python-slugify==1.2.4
 ujson==1.35
