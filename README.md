@@ -23,6 +23,10 @@ Originaly created as an example for [Python Hrvatska meetup](https://www.meetup.
 
 -----
 
+Error monitoring provided by [Bugsnag](https://www.bugsnag.com) ❤️
+
+-----
+
 This repo is the backend part of the [xkcd-excuse.com](https://xkcd-excuse.com) project. Code for the frontend part can be found in [xkcd-excuse-front](https://github.com/mislavcimpersak/xkcd-excuse-front) repo.
 
 ## API Usage
