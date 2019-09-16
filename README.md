@@ -25,6 +25,8 @@ Originaly created as an example for [Python Hrvatska meetup](https://www.meetup.
 
 Error monitoring provided by [Bugsnag](https://www.bugsnag.com) ❤️
 
+<a href="https://www.bugsnag.com"><img src="bugsnag_logo_navy.svg" alt="bugsnag" width="200"/></a>
+
 -----
 
 This repo is the backend part of the [xkcd-excuse.com](https://xkcd-excuse.com) project. Code for the frontend part can be found in [xkcd-excuse-front](https://github.com/mislavcimpersak/xkcd-excuse-front) repo.
