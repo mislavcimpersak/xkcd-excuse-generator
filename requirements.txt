@@ -10,7 +10,7 @@ Click==7.0
 Pillow==8.4.0
 Unidecode==1.1.1
 WebOb==1.8.5
-Werkzeug==0.12
+Werkzeug==2.2.3
 argcomplete==1.9.2
 attrs==19.1.0
 base58==0.2.4
