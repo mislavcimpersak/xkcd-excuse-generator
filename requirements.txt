@@ -43,5 +43,5 @@ termcolor==1.1.0
 toml==0.10.0
 tqdm==4.19.1
 urllib3==1.25.3
-wheel==0.33.6
+wheel==0.38.1
 zappa==0.45.1
