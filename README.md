@@ -1,3 +1,7 @@
+# No longer available online!
+
+-------
+
 # XKCD Excuse Generator
 
 Generate your own excuse in a nifty comic style!
